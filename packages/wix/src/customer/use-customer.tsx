@@ -14,7 +14,7 @@ export const handler: SWRHook<CustomerHook> = {
   async fetcher({ options, fetch }) {
     const res = await fetch(options)
     // @ts-ignore
-    return {...res?.data!.customer, isCustomerLoggedIn: !!res?.data!.customer}
+    return {...res.data?.customer, isCustomerLoggedIn: !!res.data?.customer}
   },
   useHook:
     ({ useData }) =>
