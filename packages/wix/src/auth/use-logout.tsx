@@ -12,7 +12,7 @@ export const handler: MutationHook<LogoutHook> = {
     query: '',
   },
   async fetcher({ options }) {
-    setCustomerToken(null)
+    setCustomerToken()
     return null
   },
   useHook:
