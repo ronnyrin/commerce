@@ -1,21 +1,14 @@
-import Cookies, { CookieAttributes } from 'js-cookie'
-import { WIX_COOKIE_EXPIRE, WIX_CUSTOMER_TOKEN_COOKIE } from '../const'
+import Cookies from 'js-cookie'
+import {
+  WIX_CUSTOMER_TOKEN_COOKIE,
+  WIX_REFRESH_TOKEN_COOKIE,
+  WIX_ACCESS_TOKEN_COOKIE
+} from '../const'
 
 export const getCustomerToken = () => Cookies.get(WIX_CUSTOMER_TOKEN_COOKIE)
 
-export const setCustomerToken = (
-  token: string | null,
-  options?: CookieAttributes
-) => {
-  if (!token) {
+export const setCustomerToken = () => {
     Cookies.remove(WIX_CUSTOMER_TOKEN_COOKIE)
-  } else {
-    Cookies.set(
-      WIX_CUSTOMER_TOKEN_COOKIE,
-      token,
-      options ?? {
-        expires: WIX_COOKIE_EXPIRE,
-      }
-    )
-  }
+    Cookies.remove(WIX_REFRESH_TOKEN_COOKIE)
+    Cookies.remove(WIX_ACCESS_TOKEN_COOKIE)
 }

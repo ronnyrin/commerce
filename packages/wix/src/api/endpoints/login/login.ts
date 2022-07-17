@@ -31,7 +31,7 @@ const login: LoginEndpoint['handlers']['login'] = async ({
     const data = await response.json()
     res.setHeader(
       'Set-Cookie',
-      [`${WIX_CUSTOMER_TOKEN_COOKIE}=${data.session.token}; Max-Age=${WIX_COOKIE_EXPIRE*86400}; Path=/`]
+      [`${WIX_CUSTOMER_TOKEN_COOKIE}=${data.session.token}; Max-Age=${WIX_COOKIE_EXPIRE*86400}; Path=/`, `${WIX_ACCESS_TOKEN_COOKIE}=; expires=Thu, Jan 01 1970 00:00:00 UTC;; Path=/`]
     )
     res.status(200).json({ data: data.member })
   } catch (error) {
