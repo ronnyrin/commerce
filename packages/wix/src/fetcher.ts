@@ -25,7 +25,7 @@ const fetcher: any = async ({
     const json = await res.json()
     accessToken = json.accessToken
     Cookies.set(WIX_ACCESS_TOKEN_COOKIE, accessToken!, {expires: 0.3})
-    Cookies.set(WIX_REFRESH_TOKEN_COOKIE, json.refreshToken!, {expires: WIX_COOKIE_EXPIRE})
+    Cookies.set(WIX_REFRESH_TOKEN_COOKIE, refreshToken || json.refreshToken!, {expires: WIX_COOKIE_EXPIRE})
   }
 
   return handleFetchResponse(
