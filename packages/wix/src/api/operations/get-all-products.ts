@@ -21,7 +21,7 @@ export default function getAllProductsOperation({
     preview?: boolean
   } = {}): Promise<T['data']> {
     const { fetcher } = commerce.getConfig(config)
-    const { products } = await fetcher({url})
+    const { products } = await fetcher({url, ...(variables && {variables: JSON.stringify({query: {paging: {limit: variables.first}}})})})
     return {
       products: products.map((p: any) =>
         normalizeProduct(p)

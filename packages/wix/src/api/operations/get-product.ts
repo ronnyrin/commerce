@@ -21,7 +21,7 @@ export default function getProductOperation({
     preview?: boolean
   } = {}): Promise<T['data']> {
     const { fetcher } = commerce.getConfig(config)
-    const { products } = await fetcher({url, method: 'POST', variables: JSON.stringify({query: {filter: JSON.stringify({slug: variables.slug})}})})
+    const { products } = await fetcher({url, variables: JSON.stringify({query: {filter: JSON.stringify({slug: variables.slug})}})})
     return {
       product: normalizeProduct(products[0])
     }
