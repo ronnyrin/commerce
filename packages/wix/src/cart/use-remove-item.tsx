@@ -36,6 +36,10 @@ export const handler: any = {
         lineItemIds: [itemId],
       }),
     })
+    await fetch({
+      url: `ecom/v1/carts/${getCartId()}/create-checkout`,
+      variables: JSON.stringify({channelType: 'WEB'})
+    })
     return normalizeCart(res)
   },
   useHook:

@@ -38,6 +38,10 @@ export const handler: any = {
           lineItems,
         }),
       })
+      await fetch({
+        url: `ecom/v1/carts/${cartId}/create-checkout`,
+        variables: JSON.stringify({channelType: 'WEB'})
+      })
       return normalizeCart(res)
     }
   },
