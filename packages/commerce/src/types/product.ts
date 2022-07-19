@@ -31,6 +31,11 @@ export type ProductVariant = {
   availableForSale?: boolean
 }
 
+export type InfoSection = {
+  title: string
+  description: string
+}
+
 export type Product = {
   id: string
   name: string
@@ -39,6 +44,7 @@ export type Product = {
   sku?: string
   slug?: string
   path?: string
+  additionalInfoSections: InfoSection[]
   images: ProductImage[]
   variants: ProductVariant[]
   price: ProductPrice
