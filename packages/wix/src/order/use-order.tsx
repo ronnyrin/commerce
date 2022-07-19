@@ -1,4 +1,5 @@
 import useCommerceOrder, { UseOrder } from '@vercel/commerce/order/use-order'
+import { normalizeOrder } from '../utils'
 export default useCommerceOrder as UseOrder<typeof handler>
 
 export const handler: any = {
@@ -11,7 +12,7 @@ export const handler: any = {
       ...options,
       url: `/api/order?orderId=${input.orderId}`
     })
-    return order
+    return normalizeOrder(order)
   },
 
   useHook:

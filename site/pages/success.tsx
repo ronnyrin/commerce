@@ -4,6 +4,7 @@ import { Layout } from '@components/common'
 import { Container, Text } from '@components/ui'
 import useOrder from '@framework/order/use-order'
 import { useRouter } from 'next/router'
+import { CartItem } from '@components/cart'
 
 export async function getStaticProps({
   preview,
@@ -23,20 +24,24 @@ export async function getStaticProps({
 
 export default function Success() {
   const router = useRouter()
-  const { data } = useOrder({orderId: router.query.orderId})
-
-  return (
+  const { data, isLoading } = useOrder({orderId: router.query.orderId})
+  return !isLoading && (
     <Container className="pt-4">
-      <Text variant="pageHeading">Thank you for purchasing {data.shippingInfo.shipmentDetails.address.fullName.firstName} {data.shippingInfo.shipmentDetails.address.fullName.lastName}</Text>
+      <Text variant="pageHeading">Thank you for purchasing {data.billingInfo.contactDetails.firstName} {data.billingInfo.contactDetails.lastName}</Text>
       <div className="flex-1 p-24 flex flex-col justify-center items-center ">
         You just bought:
-        {data.lineItems.map((item: any) => {
-          return (
-            <span><b>{item.name}</b> at {item.price}</span>
-          )
-        })}
+        <ul className="py-6 space-y-6 sm:py-0 sm:space-y-0 sm:divide-y sm:divide-accent-2 border-b border-accent-2">
+          {data!.lineItems.map((item: any) => (
+            <CartItem
+              hideButtons={true}
+              key={item.id}
+              item={item}
+              currencyCode={data?.currency.code!}
+            />
+          ))}
+        </ul>
         <br/>
-        We will ship to {data.shippingInfo.shipmentDetails.address.addressLine1} {data.shippingInfo.shipmentDetails.address.city} {data.shippingInfo.shipmentDetails.address.country}
+        We will ship to {data.shippingInfo.logistics.shippingDestination.address.addressLine}, {data.shippingInfo.logistics.shippingDestination.address.city}, {data.shippingInfo.logistics.shippingDestination.address.subdivisionFullname}, {data.shippingInfo.logistics.shippingDestination.address.countryFullname}
       </div>
     </Container>
   )

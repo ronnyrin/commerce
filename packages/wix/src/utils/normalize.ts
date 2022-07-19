@@ -119,6 +119,39 @@ function normalizeLineItem({
   }
 }
 
+export function normalizeOrder(order: any) {
+  return {
+    ...order,
+    lineItems: order.lineItems?.map(normalizeOrderLineItem),
+  }
+}
+
+function normalizeOrderLineItem({
+  id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, url, descriptionLines
+}: any): LineItem {
+  return {
+    id,
+    variantId: catalogReference.catalogItemId,
+    productId: catalogReference.catalogItemId,
+    name: productName.translated,
+    quantity,
+    variant: {
+      id: catalogReference.catalogItemId,
+      sku: physicalProperties?.sku ?? '',
+      name: productName.translated,
+      image: {
+        url: image.url || '/product-img-placeholder.svg'
+      },
+      requiresShipping: physicalProperties?.shippable ?? false,
+      price: price?.amount,
+      listPrice: priceBeforeDiscounts?.amount
+    },
+    path: '',
+    discounts: [],
+    options: descriptionLines.map((line: any) => ({name: line.name.translated, value: line.colorInfo?.code || line.plainText?.translated}))
+  }
+}
+
 export const normalizeCategory = ({
   name,
   id

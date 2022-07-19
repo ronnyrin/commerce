@@ -23,10 +23,12 @@ const CartItem = ({
   item,
   variant = 'default',
   currencyCode,
+  hideButtons = false,
   ...rest
 }: {
   variant?: 'default' | 'display'
   item: LineItem
+  hideButtons?: boolean
   currencyCode: string
 }) => {
   const { closeSidebarIfPresent } = useUI()
@@ -143,7 +145,7 @@ const CartItem = ({
           <span>{price}</span>
         </div>
       </div>
-      {variant === 'default' && (
+      {variant === 'default' && !hideButtons && (
         <Quantity
           value={quantity}
           handleRemove={handleRemove}

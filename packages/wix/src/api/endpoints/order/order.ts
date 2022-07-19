@@ -8,7 +8,7 @@ const order = async ({
 }: any) => {
   try {
     const accessToken = cookies[WIX_ACCESS_TOKEN_COOKIE]
-    const response = await fetch('https://www.wixapis.com/stores/v2/orders/0591e474-fd39-4201-be49-056e8dadca70', {
+    const response = await fetch('https://www.wixapis.com/ecom/v1/orders/0591e474-fd39-4201-be49-056e8dadca70', {
       headers: {
         'Authorization': accessToken!,
         'Content-Type': 'application/json'
