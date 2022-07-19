@@ -8,6 +8,7 @@ import { handler as useUpdateItem } from './cart/use-update-item'
 import { handler as useRemoveItem } from './cart/use-remove-item'
 
 import { handler as useCustomer } from './customer/use-customer'
+import { handler as useOrder } from './order/use-order'
 import { handler as useSearch } from './product/use-search'
 
 import { handler as useLogin } from './auth/use-login'
@@ -24,6 +25,7 @@ export const wixProvider = {
   checkout: {useCheckout},
   customer: { useCustomer },
   products: { useSearch },
+  order: { useOrder },
   auth: { useLogin, useLogout, useSignup },
 }
 

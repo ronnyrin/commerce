@@ -39,6 +39,9 @@ export type Provider = CommerceConfig & {
     useAddItem?: MutationHook<Wishlist.AddItemHook>
     useRemoveItem?: MutationHook<Wishlist.RemoveItemHook>
   }
+  order?: {
+    useOrder: SWRHook<any>
+  }
   customer?: {
     useCustomer?: SWRHook<Customer.CustomerHook>
     card?: {
