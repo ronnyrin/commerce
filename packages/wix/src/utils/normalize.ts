@@ -1,7 +1,8 @@
 import type { Cart, LineItem } from '../types/cart'
 import type { Category } from '../types/site'
-import { WIX_VIEWER_URL, WIX_DOMAIN } from '../const'
+import { WIX_VIEWER_URL, WIX_DOMAIN, WIX_REFRESH_TOKEN_COOKIE } from '../const'
 import { getCustomerToken } from './customer-token'
+import Cookies from 'js-cookie'
 
 const money = ({ price, currency }: any) => {
   return {
@@ -69,10 +70,11 @@ export function normalizeProduct({
 }
 
 export function normalizeCart({cart, checkoutId}: any): Cart {
-  const token = getCustomerToken()
+  const smToken = getCustomerToken()
+  const svToken = Cookies.get(WIX_REFRESH_TOKEN_COOKIE)
   const baseUrl = WIX_VIEWER_URL!.split('/').slice(0, 3).join('/');
   const checkoutUrl = `${WIX_VIEWER_URL}/checkout?appSectionParams={"checkoutId":"${checkoutId}","successUrl":"https://${WIX_DOMAIN}/success"}`;
-  const redirectUrl = `${baseUrl}/_serverless/vercel-cookie-redirect/redirect-to-checkout?token=${token}&domain=${WIX_VIEWER_URL}&url=${checkoutUrl}`
+  const redirectUrl = `${baseUrl}/_serverless/vercel-cookie-redirect/redirect-to-checkout?svToken=${svToken}${smToken ? `&token=${smToken}` : ''}&domain=${WIX_VIEWER_URL}&url=${checkoutUrl}`
   return {
     id: cart.id,
     url: redirectUrl,
