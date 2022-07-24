@@ -22,7 +22,10 @@ export type UpdateItemActionInput<T = any> = T extends LineItem
 
 export default useUpdateItem as UseUpdateItem<typeof handler>
 
-export const handler: any = {
+export const handler = {
+  fetchOptions: {
+    query: ''
+  },
   async fetcher({
     input: { itemId, item },
     options,
@@ -31,7 +34,7 @@ export const handler: any = {
     if (Number.isInteger(item.quantity)) {
       // Also allow the update hook to remove an item if the quantity is lower than 1
       if (item.quantity! < 1) {
-        return removeItemHandler.fetcher({
+        return removeItemHandler.fetcher!({
           options: removeItemHandler.fetchOptions,
           input: { itemId },
           fetch,

@@ -31,6 +31,7 @@ const ProductSidebar: FC<ProductSidebarProps> = ({ product, className }) => {
     try {
       await addItem({
         productId: String(product.id),
+        // @ts-ignore
         selectedOptions,
       })
       openSidebar()

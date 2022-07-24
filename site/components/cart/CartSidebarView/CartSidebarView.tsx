@@ -29,7 +29,7 @@ const CartSidebarView: FC = () => {
   const handleClose = () => closeSidebar()
   const goToCheckout = () => {
     closeSidebar();
-    window.open(data.url, '_top')
+    window.open(data!.url, '_top')
   }
 
   const error = null

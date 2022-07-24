@@ -6,10 +6,12 @@ import Cookies from 'js-cookie'
 import {
   WIX_CART_ID_COOKIE, WIX_CHECKOUT_ID_COOKIE
 } from '../const'
+import { SWRHook } from '@vercel/commerce/utils/types'
+import { GetCartHook } from '../types/cart'
 
 export default useCommerceCart as UseCart<typeof handler>
 
-export const handler: any = {
+export const handler: SWRHook<GetCartHook> = {
   fetchOptions: {
     url: 'ecom/v1/carts/current',
     method: 'GET',

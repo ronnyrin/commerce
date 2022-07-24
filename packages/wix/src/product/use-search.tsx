@@ -4,6 +4,7 @@ import useSearch, { UseSearch } from '@vercel/commerce/product/use-search'
 import {
   normalizeProduct
 } from '../utils'
+import { SearchProductsHook } from '@vercel/commerce/types/product'
 
 export type SearchProductsInput = {
   search?: string
@@ -15,7 +16,7 @@ export type SearchProductsInput = {
 
 export default useSearch as UseSearch<typeof handler>
 
-export const handler: any = {
+export const handler: SWRHook<SearchProductsHook> = {
   fetchOptions: {
     url: 'stores/v1/products/query',
     method: 'POST'

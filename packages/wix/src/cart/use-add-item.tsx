@@ -6,11 +6,16 @@ import useCart from './use-cart'
 import {
   cartCreate, getCartId, normalizeCart
 } from '../utils'
+import type { MutationHook } from '@vercel/commerce/utils/types'
+import { AddItemHook } from '../types/cart'
 
 export default useAddItem as UseAddItem<typeof handler>
 
-export const handler: any = {
-  async fetcher({ input: item, options, fetch }: any) {
+export const handler: MutationHook<AddItemHook> = {
+  fetchOptions: {
+    query: ''
+  },
+  async fetcher({ input: item, fetch }: any) {
     if (
       item.quantity &&
       (!Number.isInteger(item.quantity) || item.quantity! < 1)

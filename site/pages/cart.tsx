@@ -41,7 +41,7 @@ export default function Cart() {
   )
 
   const goToCheckout = () => {
-    window.open(data.url, '_top')
+    window.open(data!.url, '_top')
   }
 
   return (

@@ -23,8 +23,12 @@ export default useRemoveItem as UseRemoveItem<typeof handler>
 import {
   getCartId, normalizeCart
 } from '../utils'
+import { MutationHook } from '@vercel/commerce/utils/types'
 
-export const handler: any = {
+export const handler: MutationHook<RemoveItemHook> = {
+  fetchOptions: {
+    query: ''
+  },
   async fetcher({
     input: { itemId },
     options,
