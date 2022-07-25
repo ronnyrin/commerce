@@ -1,7 +1,7 @@
 import type {
   OperationContext,
 } from '@vercel/commerce/api/operations'
-import { GetProductOperation } from '../../types/product'
+import { GetProductOperation, QueryProductsResponse } from '../../types/product'
 import { normalizeProduct } from '../../utils'
 import type { WixConfig, Provider } from '..'
 
@@ -21,7 +21,7 @@ export default function getProductOperation({
     preview?: boolean
   } = {}): Promise<T['data']> {
     const { fetcher } = commerce.getConfig(config)
-    const { products } = await fetcher({url, variables: JSON.stringify({query: {filter: JSON.stringify({slug: variables.slug})}})})
+    const { products }: QueryProductsResponse = await fetcher({url, variables: JSON.stringify({query: {filter: JSON.stringify({slug: variables.slug})}})})
     return {
       product: normalizeProduct(products[0])
     }

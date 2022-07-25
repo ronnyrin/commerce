@@ -33,7 +33,6 @@ export default function getPageOperation({
     preview?: boolean
   }): Promise<T['data']> {
     return Promise.resolve({page: undefined})
-
   }
 
   return getPage

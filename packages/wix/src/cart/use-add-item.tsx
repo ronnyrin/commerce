@@ -7,7 +7,7 @@ import {
   cartCreate, getCartId, normalizeCart
 } from '../utils'
 import type { MutationHook } from '@vercel/commerce/utils/types'
-import { AddItemHook } from '../types/cart'
+import { AddItemHook, AddToCartResponse } from '../types/cart'
 
 export default useAddItem as UseAddItem<typeof handler>
 
@@ -15,7 +15,7 @@ export const handler: MutationHook<AddItemHook> = {
   fetchOptions: {
     query: ''
   },
-  async fetcher({ input: item, fetch }: any) {
+  async fetcher({ input: item, fetch }) {
     if (
       item.quantity &&
       (!Number.isInteger(item.quantity) || item.quantity! < 1)
@@ -27,6 +27,7 @@ export const handler: MutationHook<AddItemHook> = {
 
     const lineItems = [
       {
+        // @ts-ignore
         catalogReference: {catalogItemId: item.productId, appId: '1380b703-ce81-ff05-f115-39571d94dfcd', ...(item.selectedOptions && {options: {options: item.selectedOptions}})},
         quantity: item.quantity ?? 1,
       },
@@ -37,7 +38,7 @@ export const handler: MutationHook<AddItemHook> = {
     if (!cartId) {
       return normalizeCart(await cartCreate(fetch, lineItems))
     } else {
-      const res = await fetch({
+      const res: AddToCartResponse = await fetch({
         url: `ecom/v1/carts/${cartId}/add-to-cart`,
         variables: JSON.stringify({
           lineItems,

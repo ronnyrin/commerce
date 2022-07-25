@@ -1,10 +1,22 @@
-import type { Cart, LineItem } from '../types/cart'
+import type { Cart, WixCartLineItem } from '../types/cart'
 import type { Category } from '../types/site'
 import { WIX_VIEWER_URL, WIX_DOMAIN, WIX_REFRESH_TOKEN_COOKIE, WIX_CHECKOUT_ID_COOKIE } from '../const'
 import { getCustomerToken } from './customer-token'
 import Cookies from 'js-cookie'
+import { GetCartResponse, LineItem, DescriptionLine } from '../types/cart'
+import {
+  WixProduct,
+  Media,
+  MediaItem,
+  Product,
+  WixProductOption,
+  PriceData,
+  Choice,
+  ProductOption,
+  Collection
+} from '../types/product'
 
-const money = ({ price, currency }: any) => {
+const money = ({ price, currency }: PriceData) => {
   return {
     value: +price,
     currencyCode: currency
@@ -14,10 +26,11 @@ const money = ({ price, currency }: any) => {
 const normalizeProductOption = ({
   name: displayName,
   choices
-}: any) => {
+}: WixProductOption): ProductOption => {
   return {
+    id: '',
     displayName,
-    values: choices.map((choice: any) => {
+    values: choices.map((choice: Choice) => {
       let output: any = {
         label: choice.description,
       }
@@ -32,8 +45,8 @@ const normalizeProductOption = ({
   }
 }
 
-const normalizeProductImages = ({ items }: any) =>
-  items?.map((i: any) => i.image)
+const normalizeProductImages = ({ items }: Media) =>
+  items?.map((i: MediaItem) => i.image)
 
 export function normalizeProduct({
   id,
@@ -42,18 +55,19 @@ export function normalizeProduct({
   media,
   variants,
   description,
-  descriptionHtml,
   price,
   slug,
+  sku,
   convertedPriceData,
   productOptions,
-  metafields,
   ...rest
-}: any): any {
+}: WixProduct): Product {
   return {
     id,
-    name: name,
+    name,
     vendor: brand || '',
+    sku: sku || '',
+    description: description || '',
     path: `/${slug}`,
     slug: slug?.replace(/^\/+|\/+$/g, ''),
     price: money(convertedPriceData),
@@ -61,15 +75,13 @@ export function normalizeProduct({
     variants: [],
     options: productOptions
       ? productOptions
-        .map((o: any) => normalizeProductOption(o))
+        .map((o: WixProductOption) => normalizeProductOption(o))
       : [],
-    ...(description && { description }),
-    ...(descriptionHtml && { descriptionHtml }),
     ...rest
   }
 }
 
-export function normalizeCart({cart}: any): Cart {
+export function normalizeCart({cart}: GetCartResponse): Cart {
   const smToken = getCustomerToken()
   const svToken = Cookies.get(WIX_REFRESH_TOKEN_COOKIE)
   const checkoutId = Cookies.get(WIX_CHECKOUT_ID_COOKIE)
@@ -81,7 +93,7 @@ export function normalizeCart({cart}: any): Cart {
     url: redirectUrl,
     customerId: '',
     email: '',
-    createdAt: cart.createdDate,
+    createdAt: cart.createdDate.toDateString(),
     currency: {
       code: cart.currency
     },
@@ -89,14 +101,14 @@ export function normalizeCart({cart}: any): Cart {
     lineItems: cart.lineItems?.map(normalizeLineItem),
     lineItemsSubtotalPrice: +cart.subtotal?.amount,
     subtotalPrice: +cart.subtotal?.amount,
-    totalPrice: cart.subtotal?.amount,
+    totalPrice: Number(cart.subtotal?.amount),
     discounts: []
   }
 }
 
 function normalizeLineItem({
   id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, url, descriptionLines
-}: any): LineItem {
+}: WixCartLineItem): LineItem {
   return {
     id,
     variantId: catalogReference.catalogItemId,
@@ -111,8 +123,8 @@ function normalizeLineItem({
         url: image.url || '/product-img-placeholder.svg'
       },
       requiresShipping: physicalProperties?.shippable ?? false,
-      price: price?.amount,
-      listPrice: priceBeforeDiscounts?.amount
+      price: Number(price?.amount),
+      listPrice: Number(priceBeforeDiscounts?.amount)
     },
     path: String(url.relativePath.split('/')[2]),
     discounts: [],
@@ -128,8 +140,8 @@ export function normalizeOrder(order: any) {
 }
 
 function normalizeOrderLineItem({
-  id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, url, descriptionLines
-}: any): LineItem {
+  id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, descriptionLines
+}: WixCartLineItem): LineItem {
   return {
     id,
     variantId: catalogReference.catalogItemId,
@@ -144,19 +156,19 @@ function normalizeOrderLineItem({
         url: image.url || '/product-img-placeholder.svg'
       },
       requiresShipping: physicalProperties?.shippable ?? false,
-      price: price?.amount,
-      listPrice: priceBeforeDiscounts?.amount
+      price: Number(price?.amount),
+      listPrice: Number(priceBeforeDiscounts?.amount)
     },
     path: '',
     discounts: [],
-    options: descriptionLines.map((line: any) => ({name: line.name.translated, value: line.colorInfo?.code || line.plainText?.translated}))
+    options: descriptionLines.map((line: DescriptionLine) => ({name: line.name.translated, value: line.colorInfo?.code || line.plainText?.translated}))
   }
 }
 
 export const normalizeCategory = ({
   name,
   id
-}: any): Category => ({
+}: Collection): Category => ({
   id,
   name,
   slug: name,

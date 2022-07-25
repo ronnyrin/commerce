@@ -24,6 +24,7 @@ import {
   getCartId, normalizeCart
 } from '../utils'
 import { MutationHook } from '@vercel/commerce/utils/types'
+import { RemoveLineItemsResponse } from '../types/cart'
 
 export const handler: MutationHook<RemoveItemHook> = {
   fetchOptions: {
@@ -34,7 +35,7 @@ export const handler: MutationHook<RemoveItemHook> = {
     options,
     fetch,
   }: HookFetcherContext<RemoveItemHook>) {
-    const res = await fetch({
+    const res: RemoveLineItemsResponse = await fetch({
       url: `ecom/v1/carts/${getCartId()}/remove-line-items`,
       variables: JSON.stringify({
         lineItemIds: [itemId],

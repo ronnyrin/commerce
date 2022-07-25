@@ -7,7 +7,7 @@ import {
   WIX_CART_ID_COOKIE, WIX_CHECKOUT_ID_COOKIE
 } from '../const'
 import { SWRHook } from '@vercel/commerce/utils/types'
-import { GetCartHook } from '../types/cart'
+import { GetCartHook, GetCurrentCartResponse } from '../types/cart'
 
 export default useCommerceCart as UseCart<typeof handler>
 
@@ -16,9 +16,9 @@ export const handler: SWRHook<GetCartHook> = {
     url: 'ecom/v1/carts/current',
     method: 'GET',
   },
-  async fetcher({ options, fetch }: any) {
+  async fetcher({ options, fetch }) {
     try {
-      const { cart } = await fetch({
+      const { cart }: GetCurrentCartResponse = await fetch({
         ...options,
       })
 
@@ -35,8 +35,8 @@ export const handler: SWRHook<GetCartHook> = {
     }
   },
   useHook:
-    ({ useData }: any) =>
-    (input: any) => {
+    ({ useData }) =>
+    (input) => {
       const response = useData({
         swrOptions: { revalidateOnFocus: false, ...input?.swrOptions },
       })
