@@ -81,7 +81,7 @@ export type Cart = {
   // Discounts that have been applied on the cart.
   discounts?: Discount[]
 
-  url: string
+  url?: string;
 }
 
 /**
