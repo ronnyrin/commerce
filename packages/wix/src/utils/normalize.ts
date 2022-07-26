@@ -93,7 +93,7 @@ export function normalizeCart({cart}: GetCartResponse): Cart {
     url: redirectUrl,
     customerId: '',
     email: '',
-    createdAt: cart.createdDate.toDateString(),
+    createdAt: cart.createdDate,
     currency: {
       code: cart.currency
     },

@@ -73,12 +73,12 @@ export interface WixCart {
    * Date and time the cart was created.
    * @readonly
    */
-  createdDate: Date;
+  createdDate: string;
   /**
    * Date and time the cart was updated.
    * @readonly
    */
-  updatedDate: Date;
+  updatedDate: string;
   /** Contact details. */
   contactDetails: AddressWithContact;
 }
@@ -736,7 +736,7 @@ export interface Empty {}
 
 export type Cart = Core.Cart & {
   lineItems: Core.LineItem[]
-  url: string
+  url?: string
 }
 
 export type CartTypes = Core.CartTypes

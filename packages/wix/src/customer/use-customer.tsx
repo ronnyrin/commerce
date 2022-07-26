@@ -3,6 +3,7 @@ import useCustomer, {
 } from '@vercel/commerce/customer/use-customer'
 import type { CustomerHook } from '../types/customer'
 import { SWRHook } from '@vercel/commerce/utils/types'
+import { getCustomerToken } from '../utils'
 
 export default useCustomer as UseCustomer<typeof handler>
 
@@ -12,6 +13,9 @@ export const handler: SWRHook<CustomerHook> = {
     method: 'GET',
   },
   async fetcher({ options, fetch }) {
+    if (!getCustomerToken()) {
+      return null
+    }
     const res = await fetch(options)
     // @ts-ignore
     return res.data?.customer ? {...res.data?.customer} : null
