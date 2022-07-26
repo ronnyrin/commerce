@@ -26,6 +26,8 @@ export const handler: SWRHook<GetCartHook> = {
         await fetch({url: '/api/login'});
       }
 
+      Cookies.set(WIX_CART_ID_COOKIE, cart.id)
+
       return normalizeCart({
         cart,
       })
