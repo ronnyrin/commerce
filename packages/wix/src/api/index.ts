@@ -12,11 +12,13 @@ import {
 } from '../const'
 
 import fetcher from '../fetcher'
+import fetcherNew from '../fetcherNew'
 
 import * as operations from './operations'
 
 export interface WixConfig extends CommerceAPIConfig {
   fetcher: typeof fetcher
+  fetcherNew: typeof fetcherNew
 }
 
 const ONE_DAY = 60 * 60 * 24
@@ -28,7 +30,8 @@ const config: WixConfig = {
   cartCookie: WIX_CART_ID_COOKIE,
   cartCookieMaxAge: ONE_DAY * 30,
   fetch: createGraphqlFetcher(() => getCommerceApi().getConfig()),
-  fetcher
+  fetcher,
+  fetcherNew: fetcherNew
 }
 
 export const provider = {

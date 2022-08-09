@@ -4,6 +4,7 @@ import type {
 import { GetAllProductsOperation, QueryProductsResponse } from '../../types/product'
 import type { WixConfig, Provider } from '..'
 import { normalizeProduct } from '../../utils'
+import { products as productsApi } from '../../product.universal'
 
 export default function getAllProductsOperation({
   commerce,
@@ -20,8 +21,10 @@ export default function getAllProductsOperation({
     variables?: T['variables']
     preview?: boolean
   } = {}): Promise<T['data']> {
-    const { fetcher } = commerce.getConfig(config)
-    const { products }: QueryProductsResponse = await fetcher({url, ...(variables && {variables: JSON.stringify({query: {paging: {limit: variables.first}}})})})
+    const { fetcherNew, fetcher } = commerce.getConfig(config)
+    // const { products }: QueryProductsResponse = await fetcher({url, ...(variables && {variables: JSON.stringify({query: {paging: {limit: variables.first}}})})})
+    // console.log('aaaa', queryProducts().limit(variables?.first || 100).find())
+    const { products }: QueryProductsResponse = await fetcherNew(productsApi.queryProducts().limit(4).find())
     return {
       products: products.map(p =>
         normalizeProduct(p)

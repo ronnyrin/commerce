@@ -8,26 +8,24 @@ import {
 } from '../const'
 import { SWRHook } from '@vercel/commerce/utils/types'
 import { GetCartHook, GetCurrentCartResponse } from '../types/cart'
+import { cart as cartApi } from '../cart.universal'
 
 export default useCommerceCart as UseCart<typeof handler>
 
 export const handler: SWRHook<GetCartHook> = {
   fetchOptions: {
-    url: 'ecom/v1/carts/current',
-    method: 'GET',
+    query: ''
   },
-  async fetcher({ options, fetch }) {
+  async fetcher({ fetch, fetchNew }) {
     try {
-      const { cart }: GetCurrentCartResponse = await fetch({
-        ...options,
-      })
+      // @ts-ignore
+      const { cart } = await fetchNew(cartApi.getCurrentCart())
 
       if (getCustomerToken()) {
         await fetch({url: '/api/login'});
       }
 
-      Cookies.set(WIX_CART_ID_COOKIE, cart.id)
-
+      Cookies.set(WIX_CART_ID_COOKIE, cart._id)
       return normalizeCart({
         cart,
       })

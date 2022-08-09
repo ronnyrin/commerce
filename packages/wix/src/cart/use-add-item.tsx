@@ -15,7 +15,7 @@ export const handler: MutationHook<AddItemHook> = {
   fetchOptions: {
     query: ''
   },
-  async fetcher({ input: item, fetch }) {
+  async fetcher({ input: item, fetch, fetchNew }) {
     if (
       item.quantity &&
       (!Number.isInteger(item.quantity) || item.quantity! < 1)
@@ -36,7 +36,7 @@ export const handler: MutationHook<AddItemHook> = {
     let cartId = getCartId()
 
     if (!cartId) {
-      return normalizeCart(await cartCreate(fetch, lineItems))
+      return normalizeCart(await cartCreate(fetchNew, lineItems))
     } else {
       const res: AddToCartResponse = await fetch({
         url: `ecom/v1/carts/${cartId}/add-to-cart`,

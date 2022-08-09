@@ -4,6 +4,7 @@ import type {
 } from '@vercel/commerce/api/operations'
 import { GetAllProductPathsOperation, QueryProductsResponse } from '../../types/product'
 import type { WixConfig, Provider } from '..'
+import { products as productsApi } from '../../product.universal'
 
 export default function getAllProductPathsOperation({
   commerce,
@@ -33,8 +34,9 @@ export default function getAllProductPathsOperation({
     variables?: T['variables']
     preview?: boolean
   } = {}): Promise<T['data']> {
-    const { fetcher } = commerce.getConfig(config)
-    const { products }: QueryProductsResponse = await fetcher({url})
+    const { fetcher, fetcherNew } = commerce.getConfig(config)
+    // const { products }: QueryProductsResponse = await fetcher({url})
+    const { products }: QueryProductsResponse = await fetcherNew(productsApi.queryProducts().find())
     return {
       products: products.map(({slug}) =>
         ({path: `/${slug}`})

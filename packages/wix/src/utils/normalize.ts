@@ -81,7 +81,7 @@ export function normalizeProduct({
   }
 }
 
-export function normalizeCart({cart}: GetCartResponse): Cart {
+export function normalizeCart({cart}: any): Cart {
   const smToken = getCustomerToken()
   const svToken = Cookies.get(WIX_REFRESH_TOKEN_COOKIE)
   const checkoutId = Cookies.get(WIX_CHECKOUT_ID_COOKIE)
@@ -89,11 +89,11 @@ export function normalizeCart({cart}: GetCartResponse): Cart {
   const checkoutUrl = `${WIX_VIEWER_URL}/checkout?appSectionParams={"checkoutId":"${checkoutId}","successUrl":"https://${WIX_DOMAIN}/success"}`;
   const redirectUrl = `${baseUrl}/_serverless/vercel-cookie-redirect/redirect-to-checkout?svToken=${svToken}${smToken ? `&token=${smToken}` : ''}&domain=${WIX_VIEWER_URL}&url=${checkoutUrl}`
   return {
-    id: cart.id,
+    id: cart._id,
     url: redirectUrl,
     customerId: '',
     email: '',
-    createdAt: cart.createdDate,
+    createdAt: cart._createdDate,
     currency: {
       code: cart.currency
     },
@@ -107,10 +107,10 @@ export function normalizeCart({cart}: GetCartResponse): Cart {
 }
 
 function normalizeLineItem({
-  id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, url, descriptionLines
-}: WixCartLineItem): LineItem {
+  _id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, url, descriptionLines
+}: any): LineItem {
   return {
-    id,
+    id: _id,
     variantId: catalogReference.catalogItemId,
     productId: catalogReference.catalogItemId,
     name: productName.translated,
@@ -126,7 +126,7 @@ function normalizeLineItem({
       price: Number(price?.amount),
       listPrice: Number(priceBeforeDiscounts?.amount)
     },
-    path: String(url.relativePath.split('/')[2]),
+    path: '',
     discounts: [],
     options: descriptionLines.map((line: any) => ({name: line.name.translated, value: line.colorInfo?.code || line.plainText?.translated}))
   }
