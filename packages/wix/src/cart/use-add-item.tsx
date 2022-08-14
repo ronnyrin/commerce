@@ -7,7 +7,8 @@ import {
   cartCreate, getCartId, normalizeCart
 } from '../utils'
 import type { MutationHook } from '@vercel/commerce/utils/types'
-import { AddItemHook, AddToCartResponse } from '../types/cart'
+import { AddItemHook } from '../types/cart'
+import { cart } from '@wix/ecom'
 
 export default useAddItem as UseAddItem<typeof handler>
 
@@ -15,7 +16,7 @@ export const handler: MutationHook<AddItemHook> = {
   fetchOptions: {
     query: ''
   },
-  async fetcher({ input: item, fetch, fetchNew }) {
+  async fetcher({ input: item, fetchNew }) {
     if (
       item.quantity &&
       (!Number.isInteger(item.quantity) || item.quantity! < 1)
@@ -38,16 +39,8 @@ export const handler: MutationHook<AddItemHook> = {
     if (!cartId) {
       return normalizeCart(await cartCreate(fetchNew, lineItems))
     } else {
-      const res: AddToCartResponse = await fetch({
-        url: `ecom/v1/carts/${cartId}/add-to-cart`,
-        variables: JSON.stringify({
-          lineItems,
-        }),
-      })
-      await fetch({
-        url: `ecom/v1/carts/${cartId}/create-checkout`,
-        variables: JSON.stringify({channelType: 'WEB'})
-      })
+      const res = await fetchNew(cart.addToCart(cartId, {lineItems}))
+      await fetchNew(cart.createCheckout(cartId, {channelType: cart.ChannelType.WEB}))
       return normalizeCart(res)
     }
   },

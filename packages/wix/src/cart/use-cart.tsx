@@ -7,8 +7,8 @@ import {
   WIX_CART_ID_COOKIE, WIX_CHECKOUT_ID_COOKIE
 } from '../const'
 import { SWRHook } from '@vercel/commerce/utils/types'
-import { GetCartHook, GetCurrentCartResponse } from '../types/cart'
-import { cart as cartApi } from '../cart.universal'
+import { GetCartHook } from '../types/cart'
+import { cart as cartApi } from '@wix/ecom'
 
 export default useCommerceCart as UseCart<typeof handler>
 
@@ -18,14 +18,13 @@ export const handler: SWRHook<GetCartHook> = {
   },
   async fetcher({ fetch, fetchNew }) {
     try {
-      // @ts-ignore
       const { cart } = await fetchNew(cartApi.getCurrentCart())
 
       if (getCustomerToken()) {
         await fetch({url: '/api/login'});
       }
 
-      Cookies.set(WIX_CART_ID_COOKIE, cart._id)
+      Cookies.set(WIX_CART_ID_COOKIE, cart!._id!)
       return normalizeCart({
         cart,
       })

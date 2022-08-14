@@ -49,6 +49,7 @@ export function useMutationHook<H extends MutationHook<any>>(
           input,
           options: hook.fetchOptions,
           fetch: fetcher,
+        // @ts-ignore
           fetchNew: fetcherNew,
         })
       },

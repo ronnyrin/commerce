@@ -3,10 +3,15 @@ import {
   transformError,
   resolveQueryFieldsTransformationPaths,
 } from '@wix/metro-runtime/velo';
+import { HttpClient } from '@wix/http-client';
 import * as ambassadorWixStoresCatalogV1Product from '@wix/ambassador-stores-catalog-v1-product/http';
 // @ts-ignore
-import { wrapWithQueryBuilder } from '@wix/cloud-edm-autogen-query-wrapper';
-
+import { RequestOptions } from '@wix/sdk-types'
+import { wrapWithQueryBuilder } from './queryBuilder/queryBuilder'
+import {OffsetBasedIterator} from './queryBuilder/OffsetBasedIterator'
+import {CursorBasedIterator} from './queryBuilder/CursorBasedIterator'
+import { QueryBuilder } from '@wix/sdk-types/dist/types/types'
+import { QueryProductsResponse } from './types/product'
 let __verbose = false;
 
 function __log(...args: any[]) {
@@ -23,400 +28,505 @@ export const __debug = {
     off: () => (__verbose = false),
   },
 };
-const _toVeloEntity = {
-  _id: '$.id',
-  name: '$.title',
-  collectionId: '$.collectionId',
-  _createdDate: '$.createdDate',
-  modifiedDate: '$.modifiedDate',
-  image: '$.image',
-  address: '$.address',
-  document: '$.document',
-  video: '$.video',
-  pageLink: '$.pageLink',
-  audio: '$.audio',
-  color: '$.color',
-  localDate: '$.localDate',
-  localTime: '$.localTime',
-  localDateTime: '$.localDateTime',
-  variants: '$.variants',
-  mainVariant: '$.mainVariant',
-  customAddress: '$.customAddress',
-  guid: '$.guid',
-};
-const _fromVeloEntity = {
-  id: '$._id',
-  title: '$.name',
-  collectionId: '$.collectionId',
-  createdDate: '$._createdDate',
-  modifiedDate: '$.modifiedDate',
-  image: '$.image',
-  address: '$.address',
-  document: '$.document',
-  video: '$.video',
-  pageLink: '$.pageLink',
-  audio: '$.audio',
-  color: '$.color',
-  localDate: '$.localDate',
-  localTime: '$.localTime',
-  localDateTime: '$.localDateTime',
-  variants: '$.variants',
-  mainVariant: '$.mainVariant',
-  customAddress: '$.customAddress',
-  guid: '$.guid',
-};
+const _toVeloEntity = '$';
+const _fromVeloEntity = '$';
 
-/** Physical address */
-export interface Address extends AddressStreetOneOf {
-  /** Country code. */
-  country?: string | null;
-  /** Subdivision. Usually a state, region, prefecture, or province code, according to [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2). */
-  subdivision?: string | null;
-  /** City name. */
-  city?: string | null;
-  /** Zip/postal code. */
-  postalCode?: string | null;
-  /** Free text providing more detailed address info. Usually contains Apt, Suite, and Floor. */
-  addressLine2?: string | null;
+export interface Product {
   /**
-   * A string containing the full address of this location.
-   * @internal
+   * Product ID (generated automatically by the catalog).
+   * @readonly
    */
-  formattedAddress?: string | null;
+  _id?: string;
+  /** Product name. */
+  name?: string | null;
   /**
-   * Free text to help find the address.
-   * @internal
+   * A permanent, friendly URL name (generated automatically by the catalog).
+   * @readonly
    */
-  hint?: string | null;
+  slug?: string;
+  /** Whether the product is visible to site visitors. */
+  visible?: boolean | null;
+  /** Currently, only creating physical products ( `"productType": "physical"` ) is supported via the API. */
+  productType?: ProductType;
+  /** Product description. Accepts [rich text](https://dev.wix.com/api/rest/wix-stores/rich-text). */
+  description?: string | null;
+  /** Stock keeping unit (if variant management is enabled, SKUs will be set per variant, and this field will be empty). */
+  sku?: string | null;
+  /** Product weight (if variant management is enabled, weight will be set per variant, and this field will be empty). */
+  weight?: number | null;
   /**
-   * Coordinates of the physical address.
-   * @internal
+   * Product weight range. The minimum and maximum weights of all the variants.
+   * @readonly
    */
-  geocode?: AddressLocation;
+  weightRange?: NumericPropertyRange;
   /**
-   * Country full name.
-   * @internal
+   * Product inventory status (in future this will be writable via Inventory API).
+   * @readonly
    */
-  countryFullname?: string | null;
+  stock?: Stock;
   /**
-   * Subdivision full name.
-   * @internal
+   * Deprecated (use `priceData` instead).
+   * @readonly
    */
-  subdivisionFullname?: string | null;
+  price?: PriceData;
+  /** Price data. */
+  priceData?: PriceData;
   /**
-   * Multi-level subdivisions from top to bottom.
-   * @internal
+   * Price data, converted to the currency specified in request header.
+   * @readonly
    */
-  subdivisions?: Subdivision[];
-  /** Street name and number. */
-  streetAddress?: StreetAddress;
-  /** Main address line, usually street and number as free text. */
-  addressLine?: string | null;
+  convertedPriceData?: PriceData;
+  /**
+   * Product price range. The minimum and maximum prices of all the variants.
+   * @readonly
+   */
+  priceRange?: NumericPropertyRange;
+  /** Cost and profit data. */
+  costAndProfitData?: CostAndProfitData;
+  /**
+   * Product cost range. The minimum and maximum costs of all the variants.
+   * @readonly
+   */
+  costRange?: NumericPropertyRange;
+  /** Price per unit data. */
+  pricePerUnitData?: PricePerUnitData;
+  /**
+   * Additional text that the store owner can assign to the product (e.g. shipping details, refund policy, etc.). Currently writable only from the UI.
+   * @readonly
+   */
+  additionalInfoSections?: AdditionalInfoSection[];
+  /**
+   * Deprecated (use `ribbon` instead).
+   * @readonly
+   */
+  ribbons?: Ribbon[];
+  /**
+   * Media items (images, videos etc) associated with this product (writable via [Add Product Media](https://dev.wix.com/api/rest/wix-stores/catalog/products/add-product-media) endpoint).
+   * @readonly
+   */
+  media?: Media;
+  /**
+   * Text box for the customer to add a message to their order (e.g., customization request). Currently writable only from the UI.
+   * @readonly
+   */
+  customTextFields?: CustomTextField[];
+  /** Whether variants are being managed for this product - enables unique SKU, price and weight per variant. Also affects inventory data. */
+  manageVariants?: boolean | null;
+  /** Options (color, size, etc) for this product. */
+  productOptions?: ProductOption[];
+  /**
+   * Product page URL for this product (generated automatically by the server).
+   * @readonly
+   */
+  productPageUrl?: PageUrl;
+  /**
+   * Product’s unique numeric ID (assigned in ascending order).
+   * Primarily used for sorting and filtering when crawling all products.
+   * @readonly
+   */
+  numericId?: string;
+  /**
+   * Inventory item ID - ID referencing the inventory system.
+   * @readonly
+   */
+  inventoryItemId?: string;
+  /** Discount deducted from the product's original price. */
+  discount?: Discount;
+  /**
+   * A list of all collection IDs that this product is included in (writable via the Catalog > Collection APIs).
+   * @readonly
+   */
+  collectionIds?: string[];
+  /**
+   * Product variants, will be provided if the the request was sent with the includeVariants flag.
+   * @readonly
+   */
+  variants?: Variant[];
+  /**
+   * Date and time the product was last updated.
+   * @readonly
+   */
+  lastUpdated?: Date;
+  /**
+   * Date and time the product was created.
+   * @readonly
+   */
+  _createdDate?: Date;
+  /** Custom SEO data for the product. */
+  seoData?: SeoSchema;
+  /** Product ribbon. Used to highlight relevant information about a product. For example, "Sale", "New Arrival", "Sold Out". */
+  ribbon?: string | null;
+  /** Product brand. Including a brand name can help improve site and product [visibility on search engines](https://support.wix.com/en/article/adding-brand-names-to-boost-product-page-seo-in-wix-stores). */
+  brand?: string | null;
+  /**
+   * tax group id
+   * @internal
+   * @readonly
+   */
+  taxGroupId?: string | null;
+}
+
+export enum ProductType {
+  unspecified_product_type = 'unspecified_product_type',
+  physical = 'physical',
+  digital = 'digital',
+}
+
+export interface NumericPropertyRange {
+  /** Minimum value. */
+  minValue?: number;
+  /** Maximum value. */
+  maxValue?: number;
+}
+
+export interface Stock {
+  /** Whether inventory is being tracked */
+  trackInventory?: boolean;
+  /** Quantity currently left in inventory */
+  quantity?: number | null;
+  /**
+   * Whether the product is currently in stock (relevant only when tracking manually)
+   * Deprecated (use `inventoryStatus` instead)
+   */
+  inStock?: boolean;
+  /**
+   * The current status of the inventory
+   * + `IN_STOCK` - In stock
+   * + `OUT_OF_STOCK` - Not in stock
+   * + `PARTIALLY_OUT_OF_STOCK` - Some of the variants are not in stock
+   */
+  inventoryStatus?: InventoryStatus;
+}
+
+export enum InventoryStatus {
+  IN_STOCK = 'IN_STOCK',
+  OUT_OF_STOCK = 'OUT_OF_STOCK',
+  PARTIALLY_OUT_OF_STOCK = 'PARTIALLY_OUT_OF_STOCK',
+}
+
+export interface PriceData {
+  /**
+   * Product price currency
+   * @readonly
+   */
+  currency?: string;
+  /** Product price */
+  price?: number | null;
+  /**
+   * Discounted product price (if no discounted price is set, the product price is returned)
+   * @readonly
+   */
+  discountedPrice?: number;
+  /**
+   * The product price and discounted price, formatted with the currency
+   * @readonly
+   */
+  formatted?: FormattedPrice;
+  /**
+   * Price per unit
+   * @readonly
+   */
+  pricePerUnit?: number | null;
+}
+
+export interface FormattedPrice {
+  /** Product price formatted with the currency */
+  price?: string;
+  /** Discounted product price formatted with the currency (if no discounted price is set, the product formatted price is returned) */
+  discountedPrice?: string;
+  /**
+   * Price per unit
+   * @readonly
+   */
+  pricePerUnit?: string | null;
+}
+
+export interface CostAndProfitData {
+  /** Item cost. */
+  itemCost?: number | null;
+  /**
+   * Item cost formatted with currency symbol.
+   * @readonly
+   */
+  formattedItemCost?: string;
+  /**
+   * Profit. Calculated by reducing `cost` from `discounted_price`.
+   * @readonly
+   */
+  profit?: number;
+  /**
+   * Profit formatted with currency symbol.
+   * @readonly
+   */
+  formattedProfit?: string;
+  /**
+   * Profit Margin. Calculated by dividing `profit` by `discounted_price`.
+   * The result is rounded to 4 decimal places.
+   * @readonly
+   */
+  profitMargin?: number;
+}
+
+export interface PricePerUnitData {
+  /** Total quantity */
+  totalQuantity?: number;
+  /** Total measurement unit */
+  totalMeasurementUnit?: MeasurementUnit;
+  /** Base quantity */
+  baseQuantity?: number;
+  /** Base measurement unit */
+  baseMeasurementUnit?: MeasurementUnit;
+}
+
+export enum MeasurementUnit {
+  UNSPECIFIED = 'UNSPECIFIED',
+  ML = 'ML',
+  CL = 'CL',
+  L = 'L',
+  CBM = 'CBM',
+  MG = 'MG',
+  G = 'G',
+  KG = 'KG',
+  MM = 'MM',
+  CM = 'CM',
+  M = 'M',
+  SQM = 'SQM',
+  OZ = 'OZ',
+  LB = 'LB',
+  FLOZ = 'FLOZ',
+  PT = 'PT',
+  QT = 'QT',
+  GAL = 'GAL',
+  IN = 'IN',
+  FT = 'FT',
+  YD = 'YD',
+  SQFT = 'SQFT',
+}
+
+export interface AdditionalInfoSection {
+  /** Product info section title */
+  title?: string;
+  /** Product info section description */
+  description?: string;
+}
+
+export interface Ribbon {
+  /** Ribbon text */
+  text?: string;
+}
+
+export interface Media {
+  /** Primary media (image, video etc) associated with this product. */
+  mainMedia?: MediaItem;
+  /** Media (images, videos etc) associated with this product. */
+  items?: MediaItem[];
+}
+
+export interface MediaItem extends MediaItemItemOneOf {
+  /** Media item thumbnail details. */
+  thumbnail?: MediaItemUrlAndSize;
+  /** Media item type (image, video, etc.). */
+  mediaType?: MediaItemType;
+  /** Media item title. */
+  title?: string;
+  /** Media ID (for example, `"nsplsh_306d666a123a4a74306459~mv2_d_4517_2992_s_4_2.jpg"`). */
+  _id?: string;
+  /** Image data (URL, size). */
+  image?: MediaItemUrlAndSize;
+  /** Video data (URL, size). */
+  video?: MediaItemVideo;
 }
 
 /** @oneof */
-export interface AddressStreetOneOf {
-  /** Street name and number. */
-  streetAddress?: StreetAddress;
-  /** Main address line, usually street and number as free text. */
-  addressLine?: string | null;
+export interface MediaItemItemOneOf {
+  /** Image data (URL, size). */
+  image?: MediaItemUrlAndSize;
+  /** Video data (URL, size). */
+  video?: MediaItemVideo;
 }
 
-export interface StreetAddress {
-  /** Street number. */
-  number?: string;
-  /** Street name. */
-  name?: string;
-  /**
-   * Apartment number.
-   * @internal
-   */
-  apt?: string;
-}
-
-export interface AddressLocation {
-  /** Address latitude. */
-  latitude?: number | null;
-  /** Address longitude. */
-  longitude?: number | null;
-}
-
-export interface Subdivision {
-  /** Short subdivision code. */
-  code?: string;
-  /** Subdivision full name. */
-  name?: string;
-  /**
-   * Subdivision level
-   * @internal
-   */
-  type?: SubdivisionType;
-  /**
-   * Free text description of subdivision type.
-   * @internal
-   */
-  typeInfo?: string | null;
-}
-
-export enum SubdivisionType {
-  UNKNOWN_SUBDIVISION_TYPE = 'UNKNOWN_SUBDIVISION_TYPE',
-  /** State */
-  ADMINISTRATIVE_AREA_LEVEL_1 = 'ADMINISTRATIVE_AREA_LEVEL_1',
-  /** County */
-  ADMINISTRATIVE_AREA_LEVEL_2 = 'ADMINISTRATIVE_AREA_LEVEL_2',
-  /** City/town */
-  ADMINISTRATIVE_AREA_LEVEL_3 = 'ADMINISTRATIVE_AREA_LEVEL_3',
-  /** Neighborhood/quarter */
-  ADMINISTRATIVE_AREA_LEVEL_4 = 'ADMINISTRATIVE_AREA_LEVEL_4',
-  /** Street/block */
-  ADMINISTRATIVE_AREA_LEVEL_5 = 'ADMINISTRATIVE_AREA_LEVEL_5',
-  /** ADMINISTRATIVE_AREA_LEVEL_0. Indicates the national political entity, and is typically the highest order type returned by the Geocoder. */
-  COUNTRY = 'COUNTRY',
-}
-
-export interface VideoResolution {
-  /** Video URL. */
+export interface MediaItemUrlAndSize {
+  /** Media item URL. */
   url?: string;
-  /** Video height. */
-  height?: number;
-  /** Video width. */
+  /** Media item width. */
   width?: number;
-  /**
-   * Video poster. Deprecated, please use the `posters` property in the parent entity
-   * @internal
-   */
-  poster?: string;
-  /** Video format for example, mp4, hls. */
-  format?: string;
-  /**
-   * Video URL expiration date (when relevant). Optional. Deprecated, please use the `urlExpirationDate` property in the parent entity
-   * @internal
-   */
-  urlExpirationDate?: Date;
-  /**
-   * Video size in bytes. Optional. Deprecated, please use the `sizeInBytes` property in the parent entity. Size cannot be provided per resolution
-   * @internal
-   */
-  sizeInBytes?: string | null;
-  /**
-   * Video quality for example 480p, 720p
-   * @internal
-   */
-  quality?: string | null;
-  /**
-   * Video filename. Optional.
-   * @internal
-   */
-  filename?: string | null;
+  /** Media item height. */
+  height?: number;
+  /** Media format (mp4, png, etc.). */
+  format?: string | null;
+  /** Alt text. This text will be shown in case the image is not available. */
+  altText?: string | null;
 }
 
-export interface PageLink {
-  /** The page id we want from the site */
-  pageId?: string;
-  /** Where this link should open, supports _self and _blank or any name the user chooses. _self means same page, _blank means new page. */
-  target?: string | null;
+export enum MediaItemType {
+  unspecified_media_item_type = 'unspecified_media_item_type',
+  image = 'image',
+  video = 'video',
+  audio = 'audio',
+  document = 'document',
+  zip = 'zip',
+}
+
+export interface MediaItemVideo {
+  /** Data (URL, size) about each resolution for which this video is available. */
+  files?: MediaItemUrlAndSize[];
+  /** ID of an image taken from the video. Used primarily for Wix Search indexing. For example, `"nsplsh_306d666a123a4a74306459~mv2_d_4517_2992_s_4_2.jpg"`. */
+  stillFrameMediaId?: string;
+}
+
+export interface CustomTextField {
+  /** Text box title */
+  title?: string;
+  /** Text box input max length */
+  maxLength?: number;
+  /** Whether this text box is mandatory */
+  mandatory?: boolean;
+}
+
+export interface ProductOption {
+  /**
+   * Option type - color or other(drop down)
+   * @readonly
+   */
+  optionType?: OptionType;
+  /** Option name (e.g., color, size) */
+  name?: string;
+  /** Choices available for this option */
+  choices?: Choice[];
+}
+
+export enum OptionType {
+  unspecified_option_type = 'unspecified_option_type',
+  drop_down = 'drop_down',
+  color = 'color',
+}
+
+export interface Choice {
+  /** Color hex value or choice name */
+  value?: string;
+  /** Choice name */
+  description?: string;
+  /**
+   * Media items (images, videos) associated with this choice
+   * @readonly
+   */
+  media?: Media;
+  /**
+   * Based on the customer’s choices, which (if any) variants that include the selected choices are in stock
+   * @readonly
+   */
+  inStock?: boolean;
+  /**
+   * Based on the customer’s choices, which (if any) variants that include the selected choices are visible
+   * @readonly
+   */
+  visible?: boolean;
+}
+
+export interface PageUrl {
+  /** Base URL. For premium sites, this is the domain. For free sites, this is the site URL (e.g mysite.wixsite.com/mysite). */
+  base?: string;
+  /** Path to the product page - e.g /product-page/a-product. */
+  path?: string;
+}
+
+export interface Discount {
+  /** Discount type: amount / percent */
+  type?: DiscountType;
+  /** Discount value */
+  value?: number;
+}
+
+export enum DiscountType {
+  UNDEFINED = 'UNDEFINED',
+  /** No discount */
+  NONE = 'NONE',
+  AMOUNT = 'AMOUNT',
+  PERCENT = 'PERCENT',
 }
 
 export interface Variant {
-  name?: string;
-  value?: string;
-  image?: string;
-}
-
-export interface MyAddress {
-  country?: string | null;
-  subdivision?: string | null;
-  city?: string | null;
-  postalCode?: string | null;
-  streetAddress?: StreetAddress;
-  /** @internal */
-  formattedAddress?: string | null;
-}
-
-export interface CreateProductRequest {
-  product?: Product;
-}
-
-export interface CreateProductResponse {
-  product?: Product;
-}
-
-export interface DeleteProductRequest {
-  productId: string;
-}
-
-export interface DeleteProductResponse {}
-
-export interface UpdateProductRequest {
-  productId: string;
-  product?: Product;
-}
-
-export interface UpdateProductResponse {
-  product?: Product;
-}
-
-export interface GetProductRequest {
-  productId: string;
-}
-
-export interface GetProductResponse {
-  product?: Product;
-}
-
-export interface QueryProductsRequest {
-  query?: QueryV2;
-  /** Whether variants should be included in the response. */
-  includeVariants?: boolean;
-  /** Whether hidden products should be included in the response. Requires permissions to manage products. */
-  includeHiddenProducts?: boolean;
-  /** Whether merchant specific data should be included in the response. Requires permissions to manage products. */
-  includeMerchantSpecificData?: boolean;
-}
-
-export interface QueryV2 extends QueryV2PagingMethodOneOf {
+  /** Requested Variant ID */
+  _id?: string;
+  /** Specific choices within a selection, as option-choice key-value pairs */
+  choices?: Record<string, string>;
+  variant?: VariantDataWithNoStock;
   /**
-   * Filter object in the following format:
-   * `"filter" : {
-   * "fieldName1": "value1",
-   * "fieldName2":{"$operator":"value2"}
-   * }`
-   * Example of operators: `$eq`, `$ne`, `$lt`, `$lte`, `$gt`, `$gte`, `$in`, `$hasSome`, `$hasAll`, `$startsWith`, `$contains`
+   * Variant inventory status.
+   * @readonly
    */
-  filter?: Record<string, any> | null;
+  stock?: VariantStock;
+}
+
+export interface VariantDataWithNoStock {
+  /** Variant price. */
+  priceData?: PriceData;
   /**
-   * Sort object in the following format:
-   * `[{"fieldName":"sortField1","order":"ASC"},{"fieldName":"sortField2","order":"DESC"}]`
+   * Variant price data, converted to currency requested in header.
+   * @readonly
    */
-  sort?: Sorting[];
-  /** Array of projected fields. A list of specific field names to return. If `fieldsets` are also specified, the union of `fieldsets` and `fields` is returned. */
-  fields?: string[];
-  /** Array of named, predefined sets of projected fields. A array of predefined named sets of fields to be returned. Specifying multiple `fieldsets` will return the union of fields from all sets. If `fields` are also specified, the union of `fieldsets` and `fields` is returned. */
-  fieldsets?: string[];
-  /** Paging options to limit and skip the number of items. */
-  paging?: Paging;
-  /** Cursor token pointing to a page of results. Not used in the first request. Following requests use the cursor token and not `filter` or `sort`. */
-  cursorPaging?: CursorPaging;
+  convertedPriceData?: PriceData;
+  /** Cost and profit data. */
+  costAndProfitData?: CostAndProfitData;
+  /** Variant weight. */
+  weight?: number;
+  /** Variant SKU (stock keeping unit). */
+  sku?: string;
+  /** Whether the variant is visible to customers. */
+  visible?: boolean;
 }
 
-/** @oneof */
-export interface QueryV2PagingMethodOneOf {
-  /** Paging options to limit and skip the number of items. */
-  paging?: Paging;
-  /** Cursor token pointing to a page of results. Not used in the first request. Following requests use the cursor token and not `filter` or `sort`. */
-  cursorPaging?: CursorPaging;
+export interface VariantStock {
+  /** Whether inventory is being tracked. */
+  trackQuantity?: boolean;
+  /** Quantity currently left in inventory. */
+  quantity?: number | null;
+  /** Whether the product is currently in stock (relevant only when tracking manually). */
+  inStock?: boolean;
 }
 
-export interface Sorting {
-  /** Name of the field to sort by. */
-  fieldName?: string;
-  /** Sort order. */
-  order?: SortOrder;
+/**
+ * The SEO schema object contains data about different types of meta tags. It makes sure that the information about your page is presented properly to search engines.
+ * The search engines use this information for ranking purposes, or to display snippets in the search results.
+ * This data will override other sources of tags (for example patterns) and will be included in the <head> section of the HTML document, while not being displayed on the page itself.
+ */
+export interface SeoSchema {
+  /** SEO tags information. */
+  tags?: Tag[];
+  /** SEO general settings. */
+  settings?: Settings;
 }
 
-export enum SortOrder {
-  ASC = 'ASC',
-  DESC = 'DESC',
+export interface Tag {
+  /** SEO tag type. Supported values: `title`, `meta`, `script`, `link`. */
+  type?: string;
+  /** SEO tag attributes/properties (name, content, rel, href). */
+  props?: Record<string, any> | null;
+  /** Tag meta data, e.g. {height: 300, width: 240}. */
+  meta?: Record<string, any> | null;
+  /** Tag inner content e.g. `<title> inner content </title>`. */
+  children?: string;
+  /** Whether the tag is a custom tag. */
+  custom?: boolean;
+  /** Whether the tag is disabled. */
+  disabled?: boolean;
 }
 
-export interface Paging {
-  /** Number of items to load. */
-  limit?: number | null;
-  /** Number of items to skip in the current sort order. */
-  offset?: number | null;
+export interface Settings {
+  /** disable auto creation of 301 redirects on slug changes (enabled by default). */
+  preventAutoRedirect?: boolean;
 }
 
-export interface CursorPaging {
-  /** Number of items to load. */
-  limit?: number | null;
-  /**
-   * Pointer to the next or previous page in the list of results.
-   *
-   * You can get the relevant cursor token
-   * from the `pagingMetadata` object in the previous call's response.
-   * Not relevant for the first request.
-   */
-  cursor?: string | null;
-}
-
-export interface QueryProductsResponse {
-  products?: Product[];
-  metadata?: PagingMetadataV2;
-}
-
-export interface PagingMetadataV2 {
-  /** Number of items returned in the response. */
-  count?: number | null;
-  /** Offset that was requested. */
-  offset?: number | null;
-  /** Total number of items that match the query. Returned if offset paging is used and the `tooManyToCount` flag is not set. */
-  total?: number | null;
-  /** Flag that indicates the server failed to calculate the `total` field. */
-  tooManyToCount?: boolean | null;
-  /** Cursors to navigate through the result pages using `next` and `prev`. Returned if cursor paging is used. */
-  cursors?: Cursors;
-  /**
-   * Indicates if there are more results after the current page.
-   * If `true`, another page of results can be retrieved.
-   * If `false`, this is the last page.
-   * @internal
-   */
-  hasNext?: boolean | null;
-}
-
-export interface Cursors {
-  /** Cursor pointing to next page in the list of results. */
-  next?: string | null;
-  /** Cursor pointing to previous page in the list of results. */
-  prev?: string | null;
-}
-
-const _createProductRequest = { product: '_product' };
-const _createProductResponse = { product: '_product' };
-const _deleteProductRequest = {};
-const _deleteProductResponse = {};
-const _getProductRequest = {};
-const _getProductResponse = { product: '_product' };
-const _product = {
-  image: 'wix.common.Image',
-  address: 'wix.common.Address',
-  document: 'wix.common.Document',
-  video: 'wix.common.VideoV2',
-  audio: 'wix.common.Audio',
-  customAddress: 'wix.common.Address',
-  variants: '_variant',
-  mainVariant: '_variant',
-};
 const _queryProductsRequest = {};
-const _queryProductsResponse = { products: '_product' };
-const _updateProductRequest = { product: '_product' };
-const _updateProductResponse = { product: '_product' };
-const _variant = { image: 'wix.common.Image' };
+const _queryProductsResponse = {};
 
-export type Product = {
-  _id: string;
-  name: string;
-  collectionId: string;
-  _createdDate: Date;
-  modifiedDate: Date;
-  image: string;
-  address: Address;
-  document: string;
-  video: string;
-  pageLink: PageLink;
-  audio: string;
-  color: string | null;
-  localDate: string | null;
-  localTime: string | null;
-  localDateTime: string | null;
-  variants: Variant[];
-  mainVariant: Variant;
-  customAddress: MyAddress;
-  guid: string;
-};
+const PagingMethods = { CURSOR: "CURSOR", OFFSET: "OFFSET" };
 
-/** @public */
-export function queryProducts(): ProductsQueryBuilder {
+/**
+ * Returns a list of up to 100 products, given the provided paging, sorting and filtering.
+ * See [Stores Pagination](https://dev.wix.com/api/rest/wix-stores/pagination) for more information.
+ * @public */
+export function queryProducts(): QueryBuilder<QueryProductsResponse> {
   const requestTransformation = { '*': '$[1]', query: '$[0]' };
   const responseTransformation = {
     items: '$.products',
@@ -443,12 +553,39 @@ export function queryProducts(): ProductsQueryBuilder {
     customTransformation: responseTransformation,
   });
 
-  return wrapWithQueryBuilder({
+  function fromJsonWithContext(context) {
+    return (json) => {
+      const afterTransform = fromJSON(json)
+      if (context.pagingMethod === PagingMethods.OFFSET) {
+        return new OffsetBasedIterator({
+          items: afterTransform.items,
+          fetchNextPage: () => context._copyWithNextPage().build(),
+          fetchPrevPage: () => context._copyWithPrevPage().build(),
+          offset: context._pagingOffset,
+          limit: context.paging?.limit,
+          totalCount: afterTransform.pagingMetadata.total,
+          tooManyToCount: afterTransform.pagingMetadata.tooManyToCount,
+          originQuery: context,
+        });
+      }
+
+      return new CursorBasedIterator({
+        items: afterTransform.items,
+        limit: context.paging?.limit,
+        originQuery: context,
+        fetchNextPage: () => context._copyWithCursor(afterTransform.pagingMetadata.cursors.next).build(),
+        fetchPrevPage: () => context._copyWithCursor(afterTransform.pagingMetadata.cursors.prev).build(),
+        prevCursor: afterTransform.pagingMetadata.cursors.prev,
+        nextCursor: afterTransform.pagingMetadata.cursors.next,
+      });
+    }
+  }
+
+  const builder = wrapWithQueryBuilder({
     func: (payload: any) => {
       const reqOpts =
         ambassadorWixStoresCatalogV1Product.queryProducts(payload);
-
-      return {reqOpts, fromJSON}
+      return {toJSON: reqOpts, fromJSON: fromJsonWithContext(builder)}
     },
     requestTransformer: (...args: any[]) => toAmbassadorRequest(args),
     responseTransformer: ({ data }: any) => fromJSON(data),
@@ -457,36 +594,10 @@ export function queryProducts(): ProductsQueryBuilder {
 
       throw transformedError;
     },
-    // pagingMethod: 'CURSOR',
+    pagingMethod: PagingMethods.OFFSET,
     transformationPaths: resolveQueryFieldsTransformationPaths(_toVeloEntity),
-  })({ cursorWithEmptyFilterAndSort: true });
-}
-
-interface QueryCursorResult {
-  hasNext: () => boolean;
-  hasPrev: () => boolean;
-  length: number;
-  pageSize: number;
-}
-
-export interface ProductsQueryResult extends QueryCursorResult {
-  items: Product[];
-  query: ProductsQueryBuilder;
-  next: () => Promise<ProductsQueryResult>;
-  prev: () => Promise<ProductsQueryResult>;
-}
-
-export interface ProductsQueryBuilder {
-  eq: (propertyName: string, value: any) => ProductsQueryBuilder;
-  ne: (propertyName: string, value: any) => ProductsQueryBuilder;
-  startsWith: (propertyName: string, value: any) => ProductsQueryBuilder;
-  hasSome: (propertyName: string, value: any[]) => ProductsQueryBuilder;
-  in: (propertyName: string, value: any) => ProductsQueryBuilder;
-  exists: (propertyName: string, value: boolean) => ProductsQueryBuilder;
-  ascending: (...propertyNames: string[]) => ProductsQueryBuilder;
-  descending: (...propertyNames: string[]) => ProductsQueryBuilder;
-  limit: (limit: number) => ProductsQueryBuilder;
-  find: () => Promise<ProductsQueryResult>;
+  })();
+  return builder
 }
 
 export const products = {queryProducts}

@@ -1,3 +1,5 @@
+import {RequestOptions} from '@wix/sdk-types'
+
 interface SessionParams {
   accessToken: string;
   refreshToken: string;
@@ -58,8 +60,8 @@ export class WixClient implements IWixClient {
 
   withIdentity({ accessToken }: SessionParams) {
     return {
-      send: async (factory: any) => {
-        const requestOptions = factory.reqOpts({ host: API_URL })
+      send: async <T = any>(factory: RequestOptions<T>): Promise<T> => {
+        const requestOptions = factory.toJSON({ host: API_URL })
         try {
           const res = await fetch(`https://${API_URL}${requestOptions.url}`, {
             method: requestOptions.method,
@@ -71,10 +73,7 @@ export class WixClient implements IWixClient {
             }
           })
           const json = await res.json()
-          // console.log('json', res)
-          // console.log(JSON.stringify(requestOptions.data))
-
-          return json
+          return factory.fromJSON(json)
         } catch (e) {
           throw e
         }

@@ -22,10 +22,10 @@ export default function getProductOperation({
     preview?: boolean
   } = {}): Promise<T['data']> {
     const { fetcher, fetcherNew } = commerce.getConfig(config)
-    const { products }: QueryProductsResponse = await fetcher({url, variables: JSON.stringify({query: {filter: JSON.stringify({slug: variables.slug})}})})
-    // const { products }: QueryProductsResponse = await fetcherNew(productsApi.queryProducts().eq('slug', variables.slug).find())
+    // const { products }: QueryProductsResponse = await fetcher({url, variables: JSON.stringify({query: {filter: JSON.stringify({slug: variables.slug})}})})
+    const { items } = await fetcherNew(productsApi.queryProducts().eq('slug', variables.slug).build())
     return {
-      product: normalizeProduct(products[0])
+      product: normalizeProduct(items[0])
     }
   }
 

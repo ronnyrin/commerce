@@ -1,9 +1,8 @@
-import type { Cart, WixCartLineItem } from '../types/cart'
 import type { Category } from '../types/site'
 import { WIX_VIEWER_URL, WIX_DOMAIN, WIX_REFRESH_TOKEN_COOKIE, WIX_CHECKOUT_ID_COOKIE } from '../const'
 import { getCustomerToken } from './customer-token'
 import Cookies from 'js-cookie'
-import { GetCartResponse, LineItem, DescriptionLine } from '../types/cart'
+import { LineItem, DescriptionLine, WixCartLineItem } from '../types/cart'
 import {
   WixProduct,
   Media,
@@ -15,6 +14,8 @@ import {
   ProductOption,
   Collection
 } from '../types/product'
+import { Cart } from '@vercel/commerce/types/cart'
+import { cart as cartApi } from '@wix/ecom'
 
 const money = ({ price, currency }: PriceData) => {
   return {
@@ -49,7 +50,7 @@ const normalizeProductImages = ({ items }: Media) =>
   items?.map((i: MediaItem) => i.image)
 
 export function normalizeProduct({
-  id,
+  _id,
   name,
   brand,
   media,
@@ -61,9 +62,9 @@ export function normalizeProduct({
   convertedPriceData,
   productOptions,
   ...rest
-}: WixProduct): Product {
+}: any): Product {
   return {
-    id,
+    id: _id,
     name,
     vendor: brand || '',
     sku: sku || '',
@@ -81,7 +82,20 @@ export function normalizeProduct({
   }
 }
 
-export function normalizeCart({cart}: any): Cart {
+export function normalizeCart({cart}: {cart?: cartApi.Cart}): Cart {
+  if (!cart) {
+    return {
+      id: '',
+      createdAt: '',
+      currency: {code: ''},
+      taxesIncluded: false,
+      lineItems: [],
+      lineItemsSubtotalPrice: 0,
+      totalPrice: 0,
+      subtotalPrice: 0
+    }
+  }
+
   const smToken = getCustomerToken()
   const svToken = Cookies.get(WIX_REFRESH_TOKEN_COOKIE)
   const checkoutId = Cookies.get(WIX_CHECKOUT_ID_COOKIE)
@@ -89,38 +103,38 @@ export function normalizeCart({cart}: any): Cart {
   const checkoutUrl = `${WIX_VIEWER_URL}/checkout?appSectionParams={"checkoutId":"${checkoutId}","successUrl":"https://${WIX_DOMAIN}/success"}`;
   const redirectUrl = `${baseUrl}/_serverless/vercel-cookie-redirect/redirect-to-checkout?svToken=${svToken}${smToken ? `&token=${smToken}` : ''}&domain=${WIX_VIEWER_URL}&url=${checkoutUrl}`
   return {
-    id: cart._id,
+    id: cart._id!,
     url: redirectUrl,
     customerId: '',
     email: '',
-    createdAt: cart._createdDate,
+    createdAt: cart._createdDate!.toString(),
     currency: {
-      code: cart.currency
+      code: cart.currency!
     },
-    taxesIncluded: cart.taxIncludedInPrices,
-    lineItems: cart.lineItems?.map(normalizeLineItem),
-    lineItemsSubtotalPrice: +cart.subtotal?.amount,
-    subtotalPrice: +cart.subtotal?.amount,
-    totalPrice: Number(cart.subtotal?.amount),
+    taxesIncluded: !!cart.taxIncludedInPrices,
+    lineItems: cart.lineItems!.map(normalizeLineItem),
+    lineItemsSubtotalPrice: +cart.subtotal!.amount!,
+    subtotalPrice: +cart.subtotal!.amount!,
+    totalPrice: Number(cart.subtotal!.amount!),
     discounts: []
   }
 }
 
 function normalizeLineItem({
-  _id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, url, descriptionLines
-}: any): LineItem {
+  _id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, descriptionLines
+}: cartApi.LineItem): LineItem {
   return {
-    id: _id,
-    variantId: catalogReference.catalogItemId,
-    productId: catalogReference.catalogItemId,
-    name: productName.translated,
-    quantity,
+    id: _id!,
+    variantId: catalogReference!.catalogItemId!,
+    productId: catalogReference!.catalogItemId!,
+    name: productName!.translated!,
+    quantity: quantity!,
     variant: {
-      id: catalogReference.catalogItemId,
+      id: catalogReference!.catalogItemId!,
       sku: physicalProperties?.sku ?? '',
-      name: productName.translated,
+      name: productName!.translated!,
       image: {
-        url: image.url || '/product-img-placeholder.svg'
+        url: image || '/product-img-placeholder.svg'
       },
       requiresShipping: physicalProperties?.shippable ?? false,
       price: Number(price?.amount),
@@ -128,7 +142,7 @@ function normalizeLineItem({
     },
     path: '',
     discounts: [],
-    options: descriptionLines.map((line: any) => ({name: line.name.translated, value: line.colorInfo?.code || line.plainText?.translated}))
+    options: descriptionLines!.map((line: any) => ({name: line.name.translated, value: line.colorInfo?.code || line.plainText?.translated}))
   }
 }
 

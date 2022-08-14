@@ -36,9 +36,10 @@ export default function getAllProductPathsOperation({
   } = {}): Promise<T['data']> {
     const { fetcher, fetcherNew } = commerce.getConfig(config)
     // const { products }: QueryProductsResponse = await fetcher({url})
-    const { products }: QueryProductsResponse = await fetcherNew(productsApi.queryProducts().find())
+    const { items } = await fetcherNew(productsApi.queryProducts().build())
     return {
-      products: products.map(({slug}) =>
+    // @ts-ignore
+      products: items.map(({slug}) =>
         ({path: `/${slug}`})
       ),
     }

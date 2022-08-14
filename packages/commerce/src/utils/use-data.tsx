@@ -22,7 +22,7 @@ export type UseData = <H extends SWRHookSchemaBase>(
   },
   input: HookFetchInput | HookSWRInput,
   fetcherFn: Fetcher,
-  fetcherNewFn: Fetcher,
+  fetcherNewFn: any,
   swrOptions?: SwrOptions<H['data'], H['fetcherInput']>
 ) => ResponseState<H['data']>
 
