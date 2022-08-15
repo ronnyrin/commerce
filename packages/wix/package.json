@@ -51,10 +51,10 @@
   "dependencies": {
     "@vercel/commerce": "^0.0.1",
     "@vercel/fetch": "^6.1.1",
-    "@wix/cloud-edm-autogen-query-wrapper": "^1.0.0",
-    "@wix/sdk-types": "^1.0.0",
     "@wix/ambassador-stores-catalog-v1-product": "^1.0.0",
-    "@wix/ecom": "^1.0.0",
+    "@wix/cloud-edm-autogen-query-wrapper": "^1.0.0",
+    "@wix/ecom": "^1.0.3",
+    "@wix/sdk-types": "^1.0.0",
     "lodash.debounce": "^4.0.8"
   },
   "peerDependencies": {

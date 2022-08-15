@@ -5,11 +5,10 @@ import {
 } from '@wix/metro-runtime/velo';
 import * as ambassadorWixStoresCatalogV1Product from '@wix/ambassador-stores-catalog-v1-product/http';
 // @ts-ignore
-import { RequestOptions, QueryResult } from '@wix/sdk-types'
+import { RequestOptions, QueryBuilder } from '@wix/sdk-types'
 import { wrapWithQueryBuilder, PlatformizedQueryMethodWrapper } from './queryBuilder/queryBuilder'
 import {OffsetBasedIterator} from './queryBuilder/OffsetBasedIterator'
 import {CursorBasedIterator} from './queryBuilder/CursorBasedIterator'
-import { QueryBuilder } from '@wix/sdk-types/dist/types/types'
 
 let __verbose = false;
 

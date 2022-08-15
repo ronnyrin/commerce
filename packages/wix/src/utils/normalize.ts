@@ -5,11 +5,12 @@ import Cookies from 'js-cookie'
 import { LineItem, DescriptionLine, WixCartLineItem } from '../types/cart'
 import {
   Product,
-  ProductOption,
+  ProductOption
 } from '../types/product'
 import { Cart } from '@vercel/commerce/types/cart'
 import { cart as cartApi } from '@wix/ecom'
 import { PriceData, Choice, Media, MediaItem, ProductOption as PO } from '../product.universal'
+import { parse } from 'querystring'
 
 const money = ({ price, currency }: PriceData) => {
   return {
@@ -27,7 +28,7 @@ const normalizeProductOption = ({
     displayName,
     values: choices.map((choice: Choice) => {
       let output: any = {
-        label: choice.description,
+        label: choice.description
       }
       if (displayName.match(/colou?r/gi)) {
         output = {
@@ -76,12 +77,12 @@ export function normalizeProduct({
   }
 }
 
-export function normalizeCart({cart}: {cart?: cartApi.Cart}): Cart {
+export function normalizeCart({ cart }: { cart?: cartApi.Cart }): Cart {
   if (!cart) {
     return {
       id: '',
       createdAt: '',
-      currency: {code: ''},
+      currency: { code: '' },
       taxesIncluded: false,
       lineItems: [],
       lineItemsSubtotalPrice: 0,
@@ -93,8 +94,8 @@ export function normalizeCart({cart}: {cart?: cartApi.Cart}): Cart {
   const smToken = getCustomerToken()
   const svToken = Cookies.get(WIX_REFRESH_TOKEN_COOKIE)
   const checkoutId = Cookies.get(WIX_CHECKOUT_ID_COOKIE)
-  const baseUrl = WIX_VIEWER_URL!.split('/').slice(0, 3).join('/');
-  const checkoutUrl = `${WIX_VIEWER_URL}/checkout?appSectionParams={"checkoutId":"${checkoutId}","successUrl":"https://${WIX_DOMAIN}/success"}`;
+  const baseUrl = WIX_VIEWER_URL!.split('/').slice(0, 3).join('/')
+  const checkoutUrl = `${WIX_VIEWER_URL}/checkout?appSectionParams={"checkoutId":"${checkoutId}","successUrl":"https://${WIX_DOMAIN}/success"}`
   const redirectUrl = `${baseUrl}/_serverless/vercel-cookie-redirect/redirect-to-checkout?svToken=${svToken}${smToken ? `&token=${smToken}` : ''}&domain=${WIX_VIEWER_URL}&url=${checkoutUrl}`
   return {
     id: cart._id!,
@@ -114,6 +115,51 @@ export function normalizeCart({cart}: {cart?: cartApi.Cart}): Cart {
   }
 }
 
+const URL_HASH_PREFIX = '#'
+const WIX_PROTOCOL = 'wix:'
+const WIX_IMAGE = 'image'
+
+export function decodeText(s: string) {
+  if (!s) {
+    return s
+  }
+
+  return decodeURIComponent(s)
+}
+
+function alignIfLegacy(url: string, type: string): string {
+  const { protocol } = new URL(url)
+
+  return protocol === `${type}:` ? `${WIX_PROTOCOL}${url}` : url
+}
+
+function convertToImageUrl(val: string) {
+  const alignedImage = alignIfLegacy(val, WIX_IMAGE)
+
+  const { hash, pathname } = new URL(alignedImage)
+
+  const { originHeight: height, originWidth: width } = parse(
+    hash.replace(URL_HASH_PREFIX, '')
+  )
+  const [id, filenameOrAltText] = pathname
+    .replace(`${WIX_IMAGE}://v1/`, '')
+    .split('/')
+
+  const decodedFilenameOrAltText = decodeText(filenameOrAltText)
+
+  const res = { id, url: `https://static.wixstatic.com/media/${id}`, height: Number(height), width: Number(width) }
+
+  if (!decodedFilenameOrAltText) {
+    return res
+  }
+
+  return {
+    ...res,
+    altText: decodedFilenameOrAltText,
+    filename: decodedFilenameOrAltText
+  }
+}
+
 function normalizeLineItem({
   _id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, descriptionLines
 }: cartApi.LineItem): LineItem {
@@ -128,7 +174,7 @@ function normalizeLineItem({
       sku: physicalProperties?.sku ?? '',
       name: productName!.translated!,
       image: {
-        url: image || '/product-img-placeholder.svg'
+        url: convertToImageUrl(image)?.url! || '/product-img-placeholder.svg'
       },
       requiresShipping: physicalProperties?.shippable ?? false,
       price: Number(price?.amount),
@@ -136,14 +182,17 @@ function normalizeLineItem({
     },
     path: '',
     discounts: [],
-    options: descriptionLines!.map((line: any) => ({name: line.name.translated, value: line.colorInfo?.code || line.plainText?.translated}))
+    options: descriptionLines!.map((line: any) => ({
+      name: line.name.translated,
+      value: line.colorInfo?.code || line.plainText?.translated
+    }))
   }
 }
 
 export function normalizeOrder(order: any) {
   return {
     ...order,
-    lineItems: order.lineItems?.map(normalizeOrderLineItem),
+    lineItems: order.lineItems?.map(normalizeOrderLineItem)
   }
 }
 
@@ -169,7 +218,10 @@ function normalizeOrderLineItem({
     },
     path: '',
     discounts: [],
-    options: descriptionLines.map((line: DescriptionLine) => ({name: line.name.translated, value: line.colorInfo?.code || line.plainText?.translated}))
+    options: descriptionLines.map((line: DescriptionLine) => ({
+      name: line.name.translated,
+      value: line.colorInfo?.code || line.plainText?.translated
+    }))
   }
 }
 

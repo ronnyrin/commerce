@@ -2765,10 +2765,10 @@
   dependencies:
     "@wix/wix-aspects" "^1.0.1439"
 
-"@wix/ambassador-ecom-discounts-v1-discount-rule@1.0.76":
-  version "1.0.76"
-  resolved "https://repo.dev.wixpress.com/artifactory/api/npm/npm-repos/@wix/ambassador-ecom-discounts-v1-discount-rule/-/@wix/ambassador-ecom-discounts-v1-discount-rule-1.0.76.tgz#124a4ea0138032db218b5024006da00aa4e0c569"
-  integrity sha1-EkpOoBOAMtshi1AkAG2gCqTgxWk=
+"@wix/ambassador-ecom-discounts-v1-discount-rule@1.0.77":
+  version "1.0.77"
+  resolved "https://repo.dev.wixpress.com/artifactory/api/npm/npm-repos/@wix/ambassador-ecom-discounts-v1-discount-rule/-/@wix/ambassador-ecom-discounts-v1-discount-rule-1.0.77.tgz#2f367f5695e4f8e96c82d85c87b682409e5ee8a0"
+  integrity sha1-LzZ/VpXk+Olsgthch7aCQJ5e6KA=
   dependencies:
     "@wix/metro-common-builders" "^1.0.0"
     "@wix/metro-runtime" "^1.0.0"
@@ -2969,12 +2969,12 @@
   dependencies:
     ms "^2.1.1"
 
-"@wix/ecom@^1.0.0":
-  version "1.0.0"
-  resolved "https://repo.dev.wixpress.com/artifactory/api/npm/npm-repos/@wix/ecom/-/@wix/ecom-1.0.0.tgz#0b77c5fd0a42935c72b370bb407b8a7020a744f2"
-  integrity sha1-C3fF/QpCk1xys3C7QHuKcCCnRPI=
+"@wix/ecom@1.0.3":
+  version "1.0.3"
+  resolved "https://repo.dev.wixpress.com/artifactory/api/npm/npm-repos/@wix/ecom/-/@wix/ecom-1.0.3.tgz#60708ff3ffb6e6bbfbfc59be51565ac482cc7c0c"
+  integrity sha1-YHCP8/+25rv7/Fm+UVZaxILMfAw=
   dependencies:
-    "@wix/ambassador-ecom-discounts-v1-discount-rule" "1.0.76"
+    "@wix/ambassador-ecom-discounts-v1-discount-rule" "1.0.77"
     "@wix/ambassador-ecom-recommendations-v1-recommendation" "1.0.21"
     "@wix/ambassador-ecom-v1-cart" "1.0.100"
     "@wix/ambassador-ecom-v1-checkout" "1.0.69"
@@ -2983,6 +2983,7 @@
     "@wix/ambassador-ecom-v1-order-transactions" "1.0.39"
     "@wix/ambassador-ecom-v1-totals-calculation" "1.0.42"
     "@wix/metro-runtime" "^1.0.0"
+    "@wix/sdk-types" "^1.0.0"
 
 "@wix/extensions@~1.0.691":
   version "1.0.691"
