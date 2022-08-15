@@ -8,7 +8,6 @@ const optimisations = [
 
 export function queryOptimiser(query) {
   const [newQuery] = fullyOptimised(query)
-  console.log(newQuery)
   return newQuery
 }
 

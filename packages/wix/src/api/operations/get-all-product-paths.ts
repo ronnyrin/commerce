@@ -2,7 +2,7 @@ import type {
   OperationContext,
   OperationOptions,
 } from '@vercel/commerce/api/operations'
-import { GetAllProductPathsOperation, QueryProductsResponse } from '../../types/product'
+import { GetAllProductPathsOperation } from '../../types/product'
 import type { WixConfig, Provider } from '..'
 import { products as productsApi } from '../../product.universal'
 

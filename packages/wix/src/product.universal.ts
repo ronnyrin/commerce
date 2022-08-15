@@ -3,15 +3,14 @@ import {
   transformError,
   resolveQueryFieldsTransformationPaths,
 } from '@wix/metro-runtime/velo';
-import { HttpClient } from '@wix/http-client';
 import * as ambassadorWixStoresCatalogV1Product from '@wix/ambassador-stores-catalog-v1-product/http';
 // @ts-ignore
-import { RequestOptions } from '@wix/sdk-types'
-import { wrapWithQueryBuilder } from './queryBuilder/queryBuilder'
+import { RequestOptions, QueryResult } from '@wix/sdk-types'
+import { wrapWithQueryBuilder, PlatformizedQueryMethodWrapper } from './queryBuilder/queryBuilder'
 import {OffsetBasedIterator} from './queryBuilder/OffsetBasedIterator'
 import {CursorBasedIterator} from './queryBuilder/CursorBasedIterator'
 import { QueryBuilder } from '@wix/sdk-types/dist/types/types'
-import { QueryProductsResponse } from './types/product'
+
 let __verbose = false;
 
 function __log(...args: any[]) {
@@ -526,7 +525,7 @@ const PagingMethods = { CURSOR: "CURSOR", OFFSET: "OFFSET" };
  * Returns a list of up to 100 products, given the provided paging, sorting and filtering.
  * See [Stores Pagination](https://dev.wix.com/api/rest/wix-stores/pagination) for more information.
  * @public */
-export function queryProducts(): QueryBuilder<QueryProductsResponse> {
+export function queryProducts(): QueryBuilder<Product> {
   const requestTransformation = { '*': '$[1]', query: '$[0]' };
   const responseTransformation = {
     items: '$.products',
@@ -553,7 +552,7 @@ export function queryProducts(): QueryBuilder<QueryProductsResponse> {
     customTransformation: responseTransformation,
   });
 
-  function fromJsonWithContext(context) {
+  function fromJsonWithContext(context: PlatformizedQueryMethodWrapper) {
     return (json) => {
       const afterTransform = fromJSON(json)
       if (context.pagingMethod === PagingMethods.OFFSET) {

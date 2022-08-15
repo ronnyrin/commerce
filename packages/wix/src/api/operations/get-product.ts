@@ -1,7 +1,7 @@
 import type {
   OperationContext,
 } from '@vercel/commerce/api/operations'
-import { GetProductOperation, QueryProductsResponse } from '../../types/product'
+import { GetProductOperation } from '../../types/product'
 import { normalizeProduct } from '../../utils'
 import type { WixConfig, Provider } from '..'
 import { products as productsApi } from '../../product.universal'

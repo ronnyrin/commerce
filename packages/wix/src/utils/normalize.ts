@@ -4,18 +4,12 @@ import { getCustomerToken } from './customer-token'
 import Cookies from 'js-cookie'
 import { LineItem, DescriptionLine, WixCartLineItem } from '../types/cart'
 import {
-  WixProduct,
-  Media,
-  MediaItem,
   Product,
-  WixProductOption,
-  PriceData,
-  Choice,
   ProductOption,
-  Collection
 } from '../types/product'
 import { Cart } from '@vercel/commerce/types/cart'
 import { cart as cartApi } from '@wix/ecom'
+import { PriceData, Choice, Media, MediaItem, ProductOption as PO } from '../product.universal'
 
 const money = ({ price, currency }: PriceData) => {
   return {
@@ -27,7 +21,7 @@ const money = ({ price, currency }: PriceData) => {
 const normalizeProductOption = ({
   name: displayName,
   choices
-}: WixProductOption): ProductOption => {
+}: PO): ProductOption => {
   return {
     id: '',
     displayName,
@@ -76,7 +70,7 @@ export function normalizeProduct({
     variants: [],
     options: productOptions
       ? productOptions
-        .map((o: WixProductOption) => normalizeProductOption(o))
+        .map((o: PO) => normalizeProductOption(o))
       : [],
     ...rest
   }
@@ -182,7 +176,7 @@ function normalizeOrderLineItem({
 export const normalizeCategory = ({
   name,
   id
-}: Collection): Category => ({
+}: any): Category => ({
   id,
   name,
   slug: name,
