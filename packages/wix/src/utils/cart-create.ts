@@ -11,11 +11,12 @@ export const cartCreate = async (
   fetcher: typeof fetcherNew,
   lineItems: any
 ) => {
-  const res = await fetcher(cart.createCart({lineItems}))
-  const {checkoutId} = await fetcher(cart.createCheckout(res.cart!._id!, {channelType: cart.ChannelType.WEB}))
+  const client = await fetcher();
+  const res = await client.cart.createCart({lineItems})
+  const {checkoutId} = await client.cart.createCheckout(res!._id!, {channelType: cart.ChannelType.WEB}) as any
 
   if (res) {
-    const cartId = res.cart?._id
+    const cartId = res?._id
     const options = {
       expires: WIX_COOKIE_EXPIRE
     }

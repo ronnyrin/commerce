@@ -9,6 +9,7 @@ import {
 import type { MutationHook } from '@vercel/commerce/utils/types'
 import { AddItemHook } from '../types/cart'
 import { cart } from '@wix/ecom'
+import { clientTypes } from '../fetcherNew'
 
 export default useAddItem as UseAddItem<typeof handler>
 
@@ -37,10 +38,11 @@ export const handler: MutationHook<AddItemHook> = {
     let cartId = getCartId()
 
     if (!cartId) {
-      return normalizeCart(await cartCreate(fetchNew, lineItems))
+      return normalizeCart({cart: await cartCreate(fetchNew, lineItems)})
     } else {
-      const res = await fetchNew(cart.addToCart(cartId, {lineItems}))
-      await fetchNew(cart.createCheckout(cartId, {channelType: cart.ChannelType.WEB}))
+      const client = await fetchNew<clientTypes>();
+      const res = await client.cart.addToCart(cartId, {lineItems})
+      await client.cart.createCheckout(cartId, {channelType: cart.ChannelType.WEB})
       return normalizeCart(res)
     }
   },

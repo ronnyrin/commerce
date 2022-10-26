@@ -15,6 +15,7 @@ import type { UpdateItemHook, LineItem } from '../types/cart'
 import {
   getCartId, normalizeCart
 } from '../utils'
+import { clientTypes } from '../fetcherNew'
 
 export type UpdateItemActionInput<T = any> = T extends LineItem
   ? Partial<UpdateItemHook['actionInput']>
@@ -47,16 +48,17 @@ export const handler = {
         message: 'The item quantity has to be a valid integer'
       })
     }
-    const res = await fetchNew(cart.updateLineItemsQuantity(getCartId()!,
+    const client = await fetchNew<clientTypes>();
+    const res = await client.cart.updateLineItemsQuantity(getCartId()!,
       [
         {
           _id: itemId,
           quantity: item.quantity
         }
       ]
-    ))
+    )
 
-    await fetchNew(cart.createCheckout(getCartId()!, { channelType: cart.ChannelType.WEB }))
+    await client.cart.createCheckout(getCartId()!, { channelType: cart.ChannelType.WEB })
     return normalizeCart(res)
   },
   useHook:

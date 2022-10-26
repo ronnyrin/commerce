@@ -8,7 +8,7 @@ import {
 } from '../const'
 import { SWRHook } from '@vercel/commerce/utils/types'
 import { GetCartHook } from '../types/cart'
-import { cart as cartApi } from '@wix/ecom'
+import { clientTypes } from '../fetcherNew'
 
 export default useCommerceCart as UseCart<typeof handler>
 
@@ -18,7 +18,8 @@ export const handler: SWRHook<GetCartHook> = {
   },
   async fetcher({ fetch, fetchNew }) {
     try {
-      const { cart } = await fetchNew(cartApi.getCurrentCart())
+      const client = await fetchNew<clientTypes>();
+      const cart = await client.currentCart.getCurrentCart();
 
       if (getCustomerToken()) {
         await fetch({url: '/api/login'});

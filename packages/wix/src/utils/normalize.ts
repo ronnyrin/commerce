@@ -8,11 +8,10 @@ import {
   ProductOption
 } from '../types/product'
 import { Cart } from '@vercel/commerce/types/cart'
-import { cart as cartApi } from '@wix/ecom'
-import { PriceData, Choice, Media, MediaItem, ProductOption as PO } from '../product.universal'
 import { parse } from 'querystring'
+import { products } from '@wix/stores'
 
-const money = ({ price, currency }: PriceData) => {
+const money = ({ price, currency }: products.PriceData) => {
   return {
     value: +price,
     currencyCode: currency
@@ -22,11 +21,11 @@ const money = ({ price, currency }: PriceData) => {
 const normalizeProductOption = ({
   name: displayName,
   choices
-}: PO): ProductOption => {
+}: any): ProductOption => {
   return {
     id: '',
     displayName,
-    values: choices.map((choice: Choice) => {
+    values: choices.map((choice: products.Choice) => {
       let output: any = {
         label: choice.description
       }
@@ -41,8 +40,8 @@ const normalizeProductOption = ({
   }
 }
 
-const normalizeProductImages = ({ items }: Media) =>
-  items?.map((i: MediaItem) => i.image)
+const normalizeProductImages = ({ items }: products.Media) =>
+  items?.map((i: products.MediaItem) => i.image)
 
 export function normalizeProduct({
   _id,
@@ -71,13 +70,13 @@ export function normalizeProduct({
     variants: [],
     options: productOptions
       ? productOptions
-        .map((o: PO) => normalizeProductOption(o))
+        .map((o: any) => normalizeProductOption(o))
       : [],
     ...rest
   }
 }
 
-export function normalizeCart({ cart }: { cart?: cartApi.Cart }): Cart {
+export function normalizeCart({ cart }: any): Cart {
   if (!cart) {
     return {
       id: '',
@@ -162,7 +161,7 @@ function convertToImageUrl(val: string) {
 
 function normalizeLineItem({
   _id, productName, quantity, catalogReference, image, physicalProperties, price, priceBeforeDiscounts, descriptionLines
-}: cartApi.LineItem): LineItem {
+}: any): LineItem {
   return {
     id: _id!,
     variantId: catalogReference!.catalogItemId!,

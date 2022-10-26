@@ -51,7 +51,6 @@ export type HookFetcherContext<H extends HookSchemaBase> = {
   fetchNew: <
     T = any
     >(
-    options: {toJSON: (context: any) => any, fromJSON: (payload: any) => T}
   ) => Promise<T>
 }
 

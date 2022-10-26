@@ -25,6 +25,7 @@ import {
 } from '../utils'
 import { MutationHook } from '@vercel/commerce/utils/types'
 import { cart } from '@wix/ecom'
+import { clientTypes } from '../fetcherNew'
 
 export const handler: MutationHook<RemoveItemHook> = {
   fetchOptions: {
@@ -34,8 +35,9 @@ export const handler: MutationHook<RemoveItemHook> = {
     input: { itemId },
     fetchNew,
   }: HookFetcherContext<RemoveItemHook>) {
-    const res = await fetchNew(cart.removeLineItems(getCartId()!, [itemId]))
-    await fetchNew(cart.createCheckout(getCartId()!, {channelType: cart.ChannelType.WEB}))
+    const client = await fetchNew<clientTypes>();
+    const res = await client.cart.removeLineItems(getCartId()!, [itemId])
+    await client.cart.createCheckout(getCartId()!, {channelType: cart.ChannelType.WEB})
     return normalizeCart(res)
   },
   useHook:
