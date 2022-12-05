@@ -48,6 +48,10 @@ export type HookFetcherContext<H extends HookSchemaBase> = {
   >(
     options: FetcherOptions<B>
   ) => Promise<T>
+  fetchNew: <
+    T = any
+    >(
+  ) => Promise<T>
 }
 
 export type HookFetcherOptions = { method?: string } & (

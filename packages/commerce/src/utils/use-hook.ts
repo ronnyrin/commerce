@@ -8,6 +8,11 @@ export function useFetcher() {
   return providerRef.current.fetcher ?? fetcherRef.current
 }
 
+export function useFetcherNew() {
+  const { providerRef, fetcherRef } = useCommerce()
+  return providerRef.current.fetcherNew ?? fetcherRef.current
+}
+
 export function useHook<
   P extends Provider,
   H extends MutationHook<any> | SWRHook<any>
@@ -21,10 +26,11 @@ export function useSWRHook<H extends SWRHook<any>>(
   hook: PickRequired<H, 'fetcher'>
 ) {
   const fetcher = useFetcher()
+  const fetcherNew = useFetcherNew()
 
   return hook.useHook({
     useData(ctx) {
-      const response = useData(hook, ctx?.input ?? [], fetcher, ctx?.swrOptions)
+      const response = useData(hook, ctx?.input ?? [], fetcher, fetcherNew, ctx?.swrOptions)
       return response
     },
   })
@@ -34,6 +40,7 @@ export function useMutationHook<H extends MutationHook<any>>(
   hook: PickRequired<H, 'fetcher'>
 ) {
   const fetcher = useFetcher()
+  const fetcherNew = useFetcherNew()
 
   return hook.useHook({
     fetch: useCallback(
@@ -42,6 +49,8 @@ export function useMutationHook<H extends MutationHook<any>>(
           input,
           options: hook.fetchOptions,
           fetch: fetcher,
+        // @ts-ignore
+          fetchNew: fetcherNew,
         })
       },
       [fetcher, hook.fetchOptions]

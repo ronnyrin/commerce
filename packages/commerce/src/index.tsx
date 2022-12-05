@@ -24,6 +24,7 @@ const Commerce = createContext<CommerceContextValue<any> | {}>({})
 
 export type Provider = CommerceConfig & {
   fetcher: Fetcher
+  fetcherNew?: Fetcher
   cart?: {
     useCart?: SWRHook<Cart.GetCartHook>
     useAddItem?: MutationHook<Cart.AddItemHook>

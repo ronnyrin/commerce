@@ -16,11 +16,13 @@ import { handler as useLogout } from './auth/use-logout'
 import { handler as useSignup } from './auth/use-signup'
 
 import fetcher from './fetcher'
+import fetcherNew from './fetcherNew'
 
 export const wixProvider = {
   locale: 'en-us',
   cartCookie: WIX_CART_ID_COOKIE,
   fetcher,
+  fetcherNew,
   cart: { useCart, useAddItem, useUpdateItem, useRemoveItem },
   checkout: {useCheckout},
   customer: { useCustomer },

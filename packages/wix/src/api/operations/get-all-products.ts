@@ -1,7 +1,7 @@
 import type {
   OperationContext,
 } from '@vercel/commerce/api/operations'
-import { GetAllProductsOperation, QueryProductsResponse } from '../../types/product'
+import { GetAllProductsOperation } from '../../types/product'
 import type { WixConfig, Provider } from '..'
 import { normalizeProduct } from '../../utils'
 
@@ -20,10 +20,11 @@ export default function getAllProductsOperation({
     variables?: T['variables']
     preview?: boolean
   } = {}): Promise<T['data']> {
-    const { fetcher } = commerce.getConfig(config)
-    const { products }: QueryProductsResponse = await fetcher({url, ...(variables && {variables: JSON.stringify({query: {paging: {limit: variables.first}}})})})
+    const { fetcherNew } = commerce.getConfig(config)
+    const client = await fetcherNew();
+    const { items } = await client.products.queryProducts().descending('createdDate').limit(4).find()
     return {
-      products: products.map(p =>
+      products: items.map(p =>
         normalizeProduct(p)
       ),
     }

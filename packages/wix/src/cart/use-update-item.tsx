@@ -2,20 +2,20 @@ import { useCallback } from 'react'
 import debounce from 'lodash.debounce'
 import type {
   HookFetcherContext,
-  MutationHookContext,
+  MutationHookContext
 } from '@vercel/commerce/utils/types'
 import { ValidationError } from '@vercel/commerce/utils/errors'
 import useUpdateItem, {
-  UseUpdateItem,
+  UseUpdateItem
 } from '@vercel/commerce/cart/use-update-item'
-
+import { cart } from '@wix/ecom'
 import useCart from './use-cart'
 import { handler as removeItemHandler } from './use-remove-item'
 import type { UpdateItemHook, LineItem } from '../types/cart'
 import {
   getCartId, normalizeCart
 } from '../utils'
-import { UpdateLineItemsQuantityResponse } from '../types/cart'
+import { clientTypes } from '../fetcherNew'
 
 export type UpdateItemActionInput<T = any> = T extends LineItem
   ? Partial<UpdateItemHook['actionInput']>
@@ -31,6 +31,7 @@ export const handler = {
     input: { itemId, item },
     options,
     fetch,
+    fetchNew
   }: HookFetcherContext<UpdateItemHook>) {
     if (Number.isInteger(item.quantity)) {
       // Also allow the update hook to remove an item if the quantity is lower than 1
@@ -39,67 +40,63 @@ export const handler = {
           options: removeItemHandler.fetchOptions,
           input: { itemId },
           fetch,
+          fetchNew
         })
       }
     } else if (item.quantity) {
       throw new ValidationError({
-        message: 'The item quantity has to be a valid integer',
+        message: 'The item quantity has to be a valid integer'
       })
     }
-    const res: UpdateLineItemsQuantityResponse = await fetch({
-      url: `ecom/v1/carts/${getCartId()}/update-line-items-quantity`,
-      ...options,
-      variables: JSON.stringify({
-        lineItems: [
-          {
-            id: itemId,
-            quantity: item.quantity,
-          },
-        ],
-      }),
-    })
-    await fetch({
-      url: `ecom/v1/carts/${getCartId()}/create-checkout`,
-      variables: JSON.stringify({channelType: 'WEB'})
-    })
+    const client = await fetchNew<clientTypes>();
+    const res = await client.cart.updateLineItemsQuantity(getCartId()!,
+      [
+        {
+          _id: itemId,
+          quantity: item.quantity
+        }
+      ]
+    )
+
+    await client.cart.createCheckout(getCartId()!, { channelType: cart.ChannelType.WEB })
     return normalizeCart(res)
   },
   useHook:
     ({ fetch }: MutationHookContext<UpdateItemHook>) =>
-    <T extends LineItem | undefined = undefined>(
-      ctx: {
-        item?: T
-        wait?: number
-      } = {}
-    ) => {
-      const { item } = ctx
-      const { mutate } = useCart() as any
+      <T extends LineItem | undefined = undefined>(
+        ctx: {
+          item?: T
+          wait?: number
+        } = {}
+      ) => {
+        const { item } = ctx
+        const { mutate } = useCart() as any
 
-      return useCallback(
-        debounce(async (input: UpdateItemActionInput<T>) => {
-          const itemId = input.id ?? item?.id
-          const productId = input.productId ?? item?.productId
-          const variantId = input.productId ?? item?.variantId
-          if (!itemId || !productId || !variantId) {
-            throw new ValidationError({
-              message: 'Invalid input used for this operation',
+        return useCallback(
+          debounce(async (input: UpdateItemActionInput<T>) => {
+            const itemId = input.id ?? item?.id
+            const productId = input.productId ?? item?.productId
+            const variantId = input.productId ?? item?.variantId
+            if (!itemId || !productId || !variantId) {
+              throw new ValidationError({
+                message: 'Invalid input used for this operation'
+              })
+            }
+
+            const data = await fetch({
+              input: {
+                item: {
+                  productId,
+                  variantId,
+                  quantity: input.quantity
+                },
+                itemId
+              }
             })
-          }
-
-          const data = await fetch({
-            input: {
-              item: {
-                productId,
-                variantId,
-                quantity: input.quantity,
-              },
-              itemId,
-            },
-          })
-          await mutate(data, false)
-          return data
-        }, ctx.wait ?? 500),
-        [fetch, mutate]
-      )
-    },
+            await mutate(data, false)
+            return data
+          }, ctx.wait ?? 500),
+          [fetch, mutate]
+        )
+      }
 }

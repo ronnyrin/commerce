@@ -22,10 +22,11 @@ export type UseData = <H extends SWRHookSchemaBase>(
   },
   input: HookFetchInput | HookSWRInput,
   fetcherFn: Fetcher,
+  fetcherNewFn: any,
   swrOptions?: SwrOptions<H['data'], H['fetcherInput']>
 ) => ResponseState<H['data']>
 
-const useData: UseData = (options, input, fetcherFn, swrOptions) => {
+const useData: UseData = (options, input, fetcherFn, fetcherNewFn, swrOptions) => {
   const hookInput = Array.isArray(input) ? input : Object.entries(input)
   const fetcher = async (
     url: string,
@@ -42,6 +43,7 @@ const useData: UseData = (options, input, fetcherFn, swrOptions) => {
           return obj
         }, {}),
         fetch: fetcherFn,
+        fetchNew: fetcherNewFn
       })
     } catch (error) {
       // SWR will not log errors, but any error that's not an instance

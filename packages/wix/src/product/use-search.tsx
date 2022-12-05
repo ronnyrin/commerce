@@ -5,6 +5,7 @@ import {
   normalizeProduct
 } from '../utils'
 import { SearchProductsHook } from '@vercel/commerce/types/product'
+import { clientTypes } from '../fetcherNew'
 
 export type SearchProductsInput = {
   search?: string
@@ -21,7 +22,7 @@ export const handler: SWRHook<SearchProductsHook> = {
     url: 'stores/v1/products/query',
     method: 'POST'
   },
-  async fetcher({ input, options, fetch }: any) {
+  async fetcher({ input, options, fetch, fetchNew }) {
     const { categoryId } = input
     let products
     let sortType = input.sort.split('-')[0]
@@ -29,20 +30,23 @@ export const handler: SWRHook<SearchProductsHook> = {
       sortType = 'lastUpdated'
     }
     const sortValue = input.sort.split('-')[1]
-    const sortQuery = { sort: JSON.stringify([{ [sortType]: sortValue }]) }
-    let variables
 
-    if (categoryId) {
-      variables = JSON.stringify({ query: { filter: JSON.stringify({ 'collections.id': categoryId }), ...(sortType && sortQuery) } })
-    } else {
-      variables = JSON.stringify({ query: { filter: JSON.stringify({ 'name': { '$startsWith': input.search } }), ...(sortType && sortQuery) } })
+    const client = await fetchNew<clientTypes>();
+    let query = client.products.queryProducts();
+    if (sortType) {
+      if (sortValue === 'asc') {
+        query = query.ascending(sortType)
+      } else {
+        query = query.descending(sortType)
+      }
     }
-
-    const data = await fetch({
-      ...options,
-      variables
-    })
-    products = data.products
+    if (categoryId) {
+      query = query.eq('collections.id', categoryId)
+    } else {
+      query = query.startsWith('name', input.search)
+    }
+    const data = await query.find()
+    products = data.items
 
     return {
       products: products?.map((p: any) =>
