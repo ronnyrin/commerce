@@ -51,9 +51,9 @@
   "dependencies": {
     "@vercel/commerce": "^0.0.1",
     "@vercel/fetch": "^6.1.1",
-    "@wix/ecom": "^1.0.53",
-    "@wix/sdk": "^1.1.8",
-    "@wix/stores": "^1.0.4"
+    "@wix/ecom": "^1.0.83",
+    "@wix/sdk": "^1.1.19",
+    "@wix/stores": "^1.0.27"
   },
   "peerDependencies": {
     "next": "^12",
