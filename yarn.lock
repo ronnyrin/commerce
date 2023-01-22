@@ -2093,22 +2093,22 @@
   dependencies:
     "@babel/runtime" "^7.20.7"
 
-"@wix/sdk-types@^1.1.20":
-  version "1.1.20"
-  resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.20.tgz#599da34053193ba2ad11b4449eaa2014457e6912"
-  integrity sha512-gNlzfVuaohsSEADRU4XKe/holePUtdmhagvaSWDEzSCC3blQHBnmS1k3mgkrbmxNt/Wp9fDU9N/xd5qyxHJ6Kg==
+"@wix/sdk-types@^1.1.21":
+  version "1.1.21"
+  resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.21.tgz#1f7a57cfdc6c98bc3cebbfb1c4fcd716822fc880"
+  integrity sha512-bX9M5/dUW5iRTNP+YScE4BPSkmddXH7Un1yoQlZNHmZC3C6WT6cCgsqmwm+suQ+BYMpW0+FefFWYNl7R2vck3Q==
   dependencies:
     "@babel/runtime" "^7.20.7"
 
-"@wix/sdk@^1.1.20":
-  version "1.1.20"
-  resolved "https://registry.npmjs.org/@wix/sdk/-/sdk-1.1.20.tgz#081e0f6baf7e725549c585ae5586dde40f91aae0"
-  integrity sha512-Au4YxiIvWNwffeoyKEmUOPN/CkR6z1cGeeXSk5RReRHHM3GONhYJ/R4a53i0RAbSWb7nB24+QXdT4kK6+KniNg==
+"@wix/sdk@^1.1.21":
+  version "1.1.21"
+  resolved "https://registry.npmjs.org/@wix/sdk/-/sdk-1.1.21.tgz#c9aac6e3bba0ecc4da9e98f2478e41b0216896c3"
+  integrity sha512-aXn5CvLFeyvjWSRlY4e11ECrgY2xpxkZXixEPAOYUYiCTRVA3wuy+SAd5tMOSKIfPQOJeWne3l0WoJkrSJEBkQ==
   dependencies:
     "@babel/runtime" "^7.20.7"
     "@wix/identity" "^1.0.4"
     "@wix/image-kit" "^1.27.0"
-    "@wix/sdk-types" "^1.1.20"
+    "@wix/sdk-types" "^1.1.21"
     querystring "^0.2.1"
     type-fest "^2.19.0"
 
