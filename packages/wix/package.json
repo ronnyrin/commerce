@@ -52,7 +52,7 @@
     "@vercel/commerce": "^0.0.1",
     "@vercel/fetch": "^6.1.1",
     "@wix/ecom": "^1.0.83",
-    "@wix/sdk": "^1.1.19",
+    "@wix/sdk": "^1.1.20",
     "@wix/stores": "^1.0.27"
   },
   "peerDependencies": {

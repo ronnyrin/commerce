@@ -2086,22 +2086,29 @@
   resolved "https://registry.npmjs.org/@wix/motion-edm-autogen-types/-/motion-edm-autogen-types-1.0.4.tgz#4c472e35a2809c47440cce5b524089577082b333"
   integrity sha512-YremSry4GetyzEcJxUKL5623yT3N6pGa9DIMUIcyfFf2PVV1DMRhVyGu431V2tfUY1jhEzDuxTaxM9h1x6FxIQ==
 
-"@wix/sdk-types@^1.0.0", "@wix/sdk-types@^1.1.19":
+"@wix/sdk-types@^1.0.0":
   version "1.1.19"
   resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.19.tgz#96df1e7d02d75986db5ba7de7424f9c03ee8999b"
   integrity sha512-ezkvrj5SAJd6gSMZi2nwFMVMDb9rrrzuViyEzpDR8+WA88D4xS2CHarzbycpa/Cs7ubbk/cwa+AFShj1wgZH4w==
   dependencies:
     "@babel/runtime" "^7.20.7"
 
-"@wix/sdk@^1.1.19":
-  version "1.1.19"
-  resolved "https://registry.npmjs.org/@wix/sdk/-/sdk-1.1.19.tgz#74977015f13f76bbcf4b1251a223cee79721c4a8"
-  integrity sha512-WwLrmOPG6FbiQ458N2hJZpZ5tO+Di7EFvSLfHYOQOWvr6tfqBs3HNn14M5yvkyB2+/g206e2FhePDefE8IcHlw==
+"@wix/sdk-types@^1.1.20":
+  version "1.1.20"
+  resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.20.tgz#599da34053193ba2ad11b4449eaa2014457e6912"
+  integrity sha512-gNlzfVuaohsSEADRU4XKe/holePUtdmhagvaSWDEzSCC3blQHBnmS1k3mgkrbmxNt/Wp9fDU9N/xd5qyxHJ6Kg==
   dependencies:
-    "@babel/runtime" "^7.0.0"
+    "@babel/runtime" "^7.20.7"
+
+"@wix/sdk@^1.1.20":
+  version "1.1.20"
+  resolved "https://registry.npmjs.org/@wix/sdk/-/sdk-1.1.20.tgz#081e0f6baf7e725549c585ae5586dde40f91aae0"
+  integrity sha512-Au4YxiIvWNwffeoyKEmUOPN/CkR6z1cGeeXSk5RReRHHM3GONhYJ/R4a53i0RAbSWb7nB24+QXdT4kK6+KniNg==
+  dependencies:
+    "@babel/runtime" "^7.20.7"
     "@wix/identity" "^1.0.4"
     "@wix/image-kit" "^1.27.0"
-    "@wix/sdk-types" "^1.1.19"
+    "@wix/sdk-types" "^1.1.20"
     querystring "^0.2.1"
     type-fest "^2.19.0"
 
