@@ -1,7 +1,7 @@
 import { API_URL, WIX_ACCESS_TOKEN_COOKIE, WIX_DOMAIN, WIX_REFRESH_TOKEN_COOKIE, WIX_COOKIE_EXPIRE } from './const'
 import { handleFetchResponse } from './utils'
 import Cookies from 'js-cookie'
-import { createClient, OAuthStrategy } from '@wix/sdk';
+import { createClient, OAuthStrategy } from '@wix/api-client';
 import { products } from '@wix/stores'
 
 

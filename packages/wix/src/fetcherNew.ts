@@ -2,7 +2,7 @@ import { WIX_ACCESS_TOKEN_COOKIE, WIX_REFRESH_TOKEN_COOKIE, WIX_COOKIE_EXPIRE } 
 import Cookies from 'js-cookie'
 import { cart, currentCart } from '@wix/ecom'
 import { products } from '@wix/stores'
-import { createClient, OAuthStrategy } from '@wix/sdk';
+import { createClient, OAuthStrategy } from '@wix/api-client';
 
 const wixClient = createClient({modules: {cart, products, currentCart}, auth: OAuthStrategy({clientId: '6730773d-e547-4beb-ab89-6c480166c29d'})})
 export type clientTypes = typeof wixClient

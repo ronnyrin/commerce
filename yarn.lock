@@ -1965,6 +1965,18 @@
     urlpattern-polyfill "^6.0.2"
     web-streams-polyfill "^3.2.0"
 
+"@wix/api-client@^1.1.21":
+  version "1.1.22"
+  resolved "https://registry.npmjs.org/@wix/api-client/-/api-client-1.1.22.tgz#ea02ac795f37d2204413a9b4e4ba312eb7702e75"
+  integrity sha512-qy+TEjwNmbHhvqLlxypHBnyrZqIj/1WphBSKqWsz90z/iKfHOlSAdK6TY4Itx2yfuVXfwCmEsgb3CYqDh/qvKw==
+  dependencies:
+    "@babel/runtime" "^7.20.7"
+    "@wix/identity" "^1.0.4"
+    "@wix/image-kit" "^1.27.0"
+    "@wix/sdk-types" "^1.1.22"
+    querystring "^0.2.1"
+    type-fest "^2.19.0"
+
 "@wix/ecom@^1.0.83":
   version "1.0.83"
   resolved "https://registry.npmjs.org/@wix/ecom/-/ecom-1.0.83.tgz#720293508ff99cbbb6550157e9749fab535308ec"
@@ -2093,24 +2105,12 @@
   dependencies:
     "@babel/runtime" "^7.20.7"
 
-"@wix/sdk-types@^1.1.21":
-  version "1.1.21"
-  resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.21.tgz#1f7a57cfdc6c98bc3cebbfb1c4fcd716822fc880"
-  integrity sha512-bX9M5/dUW5iRTNP+YScE4BPSkmddXH7Un1yoQlZNHmZC3C6WT6cCgsqmwm+suQ+BYMpW0+FefFWYNl7R2vck3Q==
+"@wix/sdk-types@^1.1.22":
+  version "1.1.22"
+  resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.22.tgz#4a8ff8d88918a094232978db01d47212bdc00a4f"
+  integrity sha512-8Xc6dbUYVjgxNhlO1jnfURBOIfVObNjPVJ04K+69qjl4HGvMNm9bURl22oQ4VYOms3FKh/PslBpLFejqQeZuKg==
   dependencies:
     "@babel/runtime" "^7.20.7"
-
-"@wix/sdk@^1.1.21":
-  version "1.1.21"
-  resolved "https://registry.npmjs.org/@wix/sdk/-/sdk-1.1.21.tgz#c9aac6e3bba0ecc4da9e98f2478e41b0216896c3"
-  integrity sha512-aXn5CvLFeyvjWSRlY4e11ECrgY2xpxkZXixEPAOYUYiCTRVA3wuy+SAd5tMOSKIfPQOJeWne3l0WoJkrSJEBkQ==
-  dependencies:
-    "@babel/runtime" "^7.20.7"
-    "@wix/identity" "^1.0.4"
-    "@wix/image-kit" "^1.27.0"
-    "@wix/sdk-types" "^1.1.21"
-    querystring "^0.2.1"
-    type-fest "^2.19.0"
 
 "@wix/stores@^1.0.27":
   version "1.0.28"
