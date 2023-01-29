@@ -4,10 +4,11 @@ import { cart, currentCart } from '@wix/ecom'
 import { products } from '@wix/stores'
 import { createClient, OAuthStrategy } from '@wix/api-client';
 
-const wixClient = createClient({modules: {cart, products, currentCart}, auth: OAuthStrategy({clientId: '6730773d-e547-4beb-ab89-6c480166c29d'})})
-export type clientTypes = typeof wixClient
+const wixClientForTypes = createClient({modules: {cart, products, currentCart}})
+export type clientTypes = typeof wixClientForTypes
 
 const fetcher = async (): Promise<clientTypes> => {
+  const wixClient = createClient({modules: {cart, products, currentCart}, auth: OAuthStrategy({clientId: '6730773d-e547-4beb-ab89-6c480166c29d'})})
   let accessToken = Cookies.get(WIX_ACCESS_TOKEN_COOKIE) ?? ''
   let refreshToken = Cookies.get(WIX_REFRESH_TOKEN_COOKIE) ?? ''
   const wixSession = await wixClient.auth.generateVisitorTokens({accessToken, refreshToken});
