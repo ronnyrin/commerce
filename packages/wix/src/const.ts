@@ -14,4 +14,4 @@ export const WIX_REFRESH_TOKEN_COOKIE = 'wix_clientRefreshToken'
 
 export const WIX_VIEWER_URL = process.env.NEXT_PUBLIC_WIX_VIEWER_URL
 
-export const WIX_DOMAIN = process.env.NEXT_PUBLIC_WIX_DOMAIN
+export const WIX_CLIENT_ID = process.env.NEXT_PUBLIC_WIX_CLIENT_ID

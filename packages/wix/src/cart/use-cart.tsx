@@ -30,6 +30,7 @@ export const handler: SWRHook<GetCartHook> = {
         cart,
       })
     } catch (e) {
+      console.log(e)
       Cookies.remove(WIX_CART_ID_COOKIE)
       Cookies.remove(WIX_CHECKOUT_ID_COOKIE)
     }

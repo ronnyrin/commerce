@@ -51,7 +51,7 @@
   "dependencies": {
     "@vercel/commerce": "^0.0.1",
     "@vercel/fetch": "^6.1.1",
-    "@wix/api-client": "^1.1.30",
+    "@wix/api-client": "^1.1.31",
     "@wix/ecom": "^1.0.83",
     "@wix/stores": "^1.0.27"
   },

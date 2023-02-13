@@ -1,5 +1,5 @@
 import type { Category } from '../types/site'
-import { WIX_VIEWER_URL, WIX_DOMAIN, WIX_REFRESH_TOKEN_COOKIE, WIX_CHECKOUT_ID_COOKIE } from '../const'
+import { WIX_VIEWER_URL, WIX_REFRESH_TOKEN_COOKIE, WIX_CHECKOUT_ID_COOKIE } from '../const'
 import { getCustomerToken } from './customer-token'
 import Cookies from 'js-cookie'
 import { LineItem, DescriptionLine, WixCartLineItem } from '../types/cart'
@@ -94,7 +94,7 @@ export function normalizeCart({ cart }: any): Cart {
   const svToken = Cookies.get(WIX_REFRESH_TOKEN_COOKIE)
   const checkoutId = Cookies.get(WIX_CHECKOUT_ID_COOKIE)
   const baseUrl = WIX_VIEWER_URL!.split('/').slice(0, 3).join('/')
-  const checkoutUrl = `${WIX_VIEWER_URL}/checkout?appSectionParams={"checkoutId":"${checkoutId}","successUrl":"https://${WIX_DOMAIN}/success"}`
+  const checkoutUrl = `${WIX_VIEWER_URL}/checkout?appSectionParams={"checkoutId":"${checkoutId}"}`
   const redirectUrl = `${baseUrl}/_serverless/vercel-cookie-redirect/redirect-to-checkout?svToken=${svToken}${smToken ? `&token=${smToken}` : ''}&domain=${WIX_VIEWER_URL}&url=${checkoutUrl}`
   return {
     id: cart._id!,
@@ -226,9 +226,9 @@ function normalizeOrderLineItem({
 
 export const normalizeCategory = ({
   name,
-  id
+  _id
 }: any): Category => ({
-  id,
+  id: _id,
   name,
   slug: name,
   path: `/${name}`

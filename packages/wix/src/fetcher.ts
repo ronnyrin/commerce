@@ -1,4 +1,10 @@
-import { API_URL, WIX_ACCESS_TOKEN_COOKIE, WIX_DOMAIN, WIX_REFRESH_TOKEN_COOKIE, WIX_COOKIE_EXPIRE } from './const'
+import {
+  API_URL,
+  WIX_ACCESS_TOKEN_COOKIE,
+  WIX_REFRESH_TOKEN_COOKIE,
+  WIX_COOKIE_EXPIRE,
+  WIX_CLIENT_ID
+} from './const'
 import { handleFetchResponse } from './utils'
 import Cookies from 'js-cookie'
 import { createClient, OAuthStrategy } from '@wix/api-client';
@@ -10,13 +16,13 @@ const fetcher: any = async ({
   url,
   variables
 }: any) => {
-  const wixClient = createClient({modules: {products}, auth: OAuthStrategy({clientId: '6730773d-e547-4beb-ab89-6c480166c29d'})})
-  let accessToken = Cookies.get(WIX_ACCESS_TOKEN_COOKIE)
+  const wixClient = createClient({modules: {products}, auth: OAuthStrategy({clientId: WIX_CLIENT_ID})})
+  let accessToken = JSON.parse(Cookies.get(WIX_ACCESS_TOKEN_COOKIE) || '{}') ?? ''
   let refreshToken = Cookies.get(WIX_REFRESH_TOKEN_COOKIE)
   const wixSession = await wixClient.auth.generateVisitorTokens({accessToken, refreshToken});
 
   accessToken = wixSession.accessToken;
-  Cookies.set(WIX_ACCESS_TOKEN_COOKIE, accessToken!, {expires: 0.3})
+  Cookies.set(WIX_ACCESS_TOKEN_COOKIE, JSON.stringify(accessToken!), {expires: 0.1})
   Cookies.set(WIX_REFRESH_TOKEN_COOKIE, refreshToken || wixSession.refreshToken!, {expires: WIX_COOKIE_EXPIRE})
 
   return handleFetchResponse(
@@ -24,8 +30,7 @@ const fetcher: any = async ({
       method,
       ...(variables && { body: variables }),
       headers: {
-        'origin': WIX_DOMAIN!,
-        'Authorization': accessToken!,
+        'Authorization': accessToken!.accessToken,
         'Content-Type': 'application/json'
       }
     })

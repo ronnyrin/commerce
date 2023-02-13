@@ -1965,15 +1965,15 @@
     urlpattern-polyfill "^6.0.2"
     web-streams-polyfill "^3.2.0"
 
-"@wix/api-client@^1.1.30":
-  version "1.1.30"
-  resolved "https://registry.npmjs.org/@wix/api-client/-/api-client-1.1.30.tgz#ef3b2e012d9d6d26650ab41ed88355a1cdd0f2ef"
-  integrity sha512-yS57gTQZtVKBqOSlGLwo4H5V6ZXvutXwtmRXR0PVHGOEC+ovYnXFNvfnaFp8GU7gy/aGf78vNRvXM3Zt4I2ITA==
+"@wix/api-client@^1.1.31":
+  version "1.1.31"
+  resolved "https://registry.npmjs.org/@wix/api-client/-/api-client-1.1.31.tgz#1c1e10d034abf61bf054d4bb50513ba174d8555a"
+  integrity sha512-HqN8uzC7cq0c3rZKPKsMTsNxqBeC8xOWlGxYE1mUrycP09dErjfqkzn3azW41srB5IzWXdu3QZJ0hq2kyr1Eag==
   dependencies:
     "@babel/runtime" "^7.20.13"
-    "@wix/identity" "^1.0.6"
+    "@wix/identity" "^1.0.10"
     "@wix/image-kit" "^1.28.0"
-    "@wix/sdk-types" "^1.1.30"
+    "@wix/sdk-types" "^1.1.31"
     querystring "^0.2.1"
     type-fest "^2.19.0"
 
@@ -1995,10 +1995,10 @@
     kind-of "~5.1.0"
     tslib "^2.4.1"
 
-"@wix/identity@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.npmjs.org/@wix/identity/-/identity-1.0.6.tgz#67934abeb54700ed4338abd1da24bd834b5d0811"
-  integrity sha512-w45d8OGBMfqDHUl+GbpFHIcRaV5tpT9xy6H1U4Y+afsw/iOa+NqUFoVX9h498FfpUY6prpeSZqTZQZlhWoKZrw==
+"@wix/identity@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.npmjs.org/@wix/identity/-/identity-1.0.10.tgz#0597c8256334a3a485f6dc4b107b9fac05e860c6"
+  integrity sha512-HjNaiCD2YrvRPJ5lI6g5q36LF2UCS2oafs8BoQnswcWse235StF5QE8eAPo33HTsU/75kPXxy7Ak7/Axk0EErA==
   dependencies:
     "@wix/metro-runtime" "^1.0.0"
     "@wix/motion-edm-autogen-query-wrapper" "^1.0.0"
@@ -2105,10 +2105,10 @@
   dependencies:
     "@babel/runtime" "^7.20.7"
 
-"@wix/sdk-types@^1.1.30":
-  version "1.1.30"
-  resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.30.tgz#a7176c434804ebd6342ccd3d37f04d3ad7be3f66"
-  integrity sha512-cMxn8THeH6cbaKhmN6ih38p0hRNfH7/nH3apjNQ+nx8jxDjeVFTPmSzxVIB3OaE2+iXSn6NO7t21vxtakfhwjQ==
+"@wix/sdk-types@^1.1.31":
+  version "1.1.31"
+  resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.31.tgz#a306a9dc061213a88489fba73fb0f8be12d20043"
+  integrity sha512-jFmvdk09tyT2KGO46TA7KRLQDlw8oKI/HYTmyhZ9yLO3GBRR7e1RGbkF+Qj2I0Kv0YaCUo1HNcMCrN1uEO+GEw==
   dependencies:
     "@babel/runtime" "^7.20.13"
 

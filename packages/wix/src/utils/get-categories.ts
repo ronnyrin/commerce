@@ -3,13 +3,14 @@ import { WixConfig } from '../api'
 import { normalizeCategory } from './normalize'
 
 const getCategories = async ({
-  fetcher,
   locale,
+  fetcherNew
 }: WixConfig): Promise<Category[]> => {
-  const { collections } = await fetcher({url: 'stores/v1/collections/query', method: 'POST'})
+  const client = await fetcherNew();
+  const {items} = await client.collections.queryCollections().find();
 
   return (
-    collections?.filter(c => c.id !== '00000000-000000-000000-000000000001').map(collection =>
+    items?.filter(c => c._id !== '00000000-000000-000000-000000000001').map(collection =>
       normalizeCategory(collection)
     ) ?? []
   )
