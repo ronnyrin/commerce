@@ -10,10 +10,10 @@ export type clientTypes = typeof wixClientForTypes
 const fetcher = async (): Promise<clientTypes> => {
   const wixClient = createClient({modules: {cart, products, currentCart, collections}, auth: OAuthStrategy({clientId: WIX_CLIENT_ID})})
   let accessToken = JSON.parse(Cookies.get(WIX_ACCESS_TOKEN_COOKIE) || '{}') ?? ''
-  let refreshToken = Cookies.get(WIX_REFRESH_TOKEN_COOKIE) ?? ''
+  let refreshToken = JSON.parse(Cookies.get(WIX_REFRESH_TOKEN_COOKIE) || '{}') ?? ''
   const wixSession = await wixClient.auth.generateVisitorTokens({accessToken, refreshToken});
   Cookies.set(WIX_ACCESS_TOKEN_COOKIE, JSON.stringify(wixSession.accessToken!), { expires: 0.1 })
-  Cookies.set(WIX_REFRESH_TOKEN_COOKIE, wixSession.refreshToken!, { expires: WIX_COOKIE_EXPIRE })
+  Cookies.set(WIX_REFRESH_TOKEN_COOKIE, JSON.stringify(wixSession.refreshToken!), { expires: WIX_COOKIE_EXPIRE })
   wixClient.auth.setTokens(wixSession)
 
   return wixClient

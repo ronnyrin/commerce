@@ -1965,15 +1965,15 @@
     urlpattern-polyfill "^6.0.2"
     web-streams-polyfill "^3.2.0"
 
-"@wix/api-client@^1.1.31":
-  version "1.1.31"
-  resolved "https://registry.npmjs.org/@wix/api-client/-/api-client-1.1.31.tgz#1c1e10d034abf61bf054d4bb50513ba174d8555a"
-  integrity sha512-HqN8uzC7cq0c3rZKPKsMTsNxqBeC8xOWlGxYE1mUrycP09dErjfqkzn3azW41srB5IzWXdu3QZJ0hq2kyr1Eag==
+"@wix/api-client@^1.1.33":
+  version "1.1.33"
+  resolved "https://registry.npmjs.org/@wix/api-client/-/api-client-1.1.33.tgz#70812efe9adeb554e30e0a53e7024701707d6669"
+  integrity sha512-55ddj+geMwt4xJ3kAUXzlS8AXMBgngRXRTeQCM3Nr4fYHodIDYuHMFuTk7f6lcw8KchgUeDXJZjrXL9+QAXoWw==
   dependencies:
     "@babel/runtime" "^7.20.13"
     "@wix/identity" "^1.0.10"
     "@wix/image-kit" "^1.28.0"
-    "@wix/sdk-types" "^1.1.31"
+    "@wix/sdk-types" "^1.1.33"
     querystring "^0.2.1"
     type-fest "^2.19.0"
 
@@ -2105,10 +2105,10 @@
   dependencies:
     "@babel/runtime" "^7.20.7"
 
-"@wix/sdk-types@^1.1.31":
-  version "1.1.31"
-  resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.31.tgz#a306a9dc061213a88489fba73fb0f8be12d20043"
-  integrity sha512-jFmvdk09tyT2KGO46TA7KRLQDlw8oKI/HYTmyhZ9yLO3GBRR7e1RGbkF+Qj2I0Kv0YaCUo1HNcMCrN1uEO+GEw==
+"@wix/sdk-types@^1.1.33":
+  version "1.1.33"
+  resolved "https://registry.npmjs.org/@wix/sdk-types/-/sdk-types-1.1.33.tgz#f834a4781c27e72cd016b6e1cae565dba23fd17b"
+  integrity sha512-fM0NyVyJabjUFCM2JcFcz0uiI02W4ycuOHNjknGv9KIkXGYStRMZ5kKkjDXmTmZ1UNwubb5PFoiNvriEEVqc6Q==
   dependencies:
     "@babel/runtime" "^7.20.13"
 
